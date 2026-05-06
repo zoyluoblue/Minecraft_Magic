@@ -1,0 +1,30 @@
+{
+	"schemaVersion": 1,
+	"id": "magic",
+	"version": "${version}",
+	"name": "Magic",
+	"description": "Adds a strengthening table and critical chance weapon enhancements.",
+	"authors": [
+		"zoyluo"
+	],
+	"contact": {},
+	"license": "MIT",
+	"environment": "*",
+	"entrypoints": {
+		"main": [
+			"com.zoyluo.magic.Magic"
+		],
+		"client": [
+			"com.zoyluo.magic.MagicClient"
+		]
+	},
+	"mixins": [
+		"magic.mixins.json"
+	],
+	"depends": {
+		"fabricloader": ">=0.18.4",
+		"minecraft": "1.21.3",
+		"java": ">=21",
+		"fabric-api": ">=0.114.1+1.21.3"
+	}
+}

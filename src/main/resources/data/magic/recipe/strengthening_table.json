@@ -1,0 +1,19 @@
+{
+	"type": "minecraft:crafting_shaped",
+	"category": "misc",
+	"pattern": [
+		"IEI",
+		"ASA",
+		"III"
+	],
+	"key": {
+		"I": "minecraft:iron_ingot",
+		"E": "minecraft:emerald",
+		"A": "minecraft:amethyst_shard",
+		"S": "minecraft:smithing_table"
+	},
+	"result": {
+		"id": "magic:strengthening_table",
+		"count": 1
+	}
+}

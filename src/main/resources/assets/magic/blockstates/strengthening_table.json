@@ -1,0 +1,19 @@
+{
+	"variants": {
+		"facing=north": {
+			"model": "magic:block/strengthening_table"
+		},
+		"facing=east": {
+			"model": "magic:block/strengthening_table",
+			"y": 90
+		},
+		"facing=south": {
+			"model": "magic:block/strengthening_table",
+			"y": 180
+		},
+		"facing=west": {
+			"model": "magic:block/strengthening_table",
+			"y": 270
+		}
+	}
+}

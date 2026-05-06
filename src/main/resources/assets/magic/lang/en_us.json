@@ -1,0 +1,17 @@
+{
+	"block.magic.strengthening_table": "强化台",
+	"container.magic.strengthening_table": "强化台",
+	"enhancement.magic.crit": "暴击",
+	"enhancement.magic.petrify": "石化",
+	"enhancement.magic.instant_kill": "一击",
+	"enhancement.magic.power": "力量",
+	"enhancement.magic.explosion": "爆炸",
+	"gui.magic.enhancement_empty": "%s：未强化",
+	"gui.magic.enhancement_status": "%s：%s（数值 %s）",
+	"gui.magic.max_level": "已达到最高强化",
+	"gui.magic.next_cost": "%s 下一等级 %s：%s 个 %s",
+	"gui.magic.place_tool": "放入工具或武器",
+	"gui.magic.strengthen": "强化",
+	"message.magic.triggered": "%s触发！概率 %s",
+	"tooltip.magic.enhancement": "%s强化：%s（数值 %s）"
+}

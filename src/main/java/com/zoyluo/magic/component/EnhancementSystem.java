@@ -1,0 +1,233 @@
+package com.zoyluo.magic.component;
+
+import net.minecraft.component.DataComponentTypes;
+import net.minecraft.component.type.NbtComponent;
+import net.minecraft.item.ArmorItem;
+import net.minecraft.item.BowItem;
+import net.minecraft.item.CrossbowItem;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
+import net.minecraft.item.MiningToolItem;
+import net.minecraft.item.SwordItem;
+import net.minecraft.item.TridentItem;
+import net.minecraft.nbt.NbtCompound;
+import org.jetbrains.annotations.Nullable;
+
+import java.util.Locale;
+
+public final class EnhancementSystem {
+	private static final String ROOT_KEY = "MagicEnhancements";
+	private static final String MAJOR_KEY = "Major";
+	private static final String MINOR_KEY = "Minor";
+	private static final String LEGACY_CRIT_MAJOR_KEY = "MagicCritMajor";
+	private static final String LEGACY_CRIT_MINOR_KEY = "MagicCritMinor";
+	public static final int MAX_MAJOR = 4;
+	public static final int MAX_MINOR = 10;
+
+	private EnhancementSystem() {
+	}
+
+	public static boolean isUpgradeableTool(ItemStack stack) {
+		if (stack.isEmpty()) {
+			return false;
+		}
+
+		Item item = stack.getItem();
+		if (item instanceof ArmorItem || item == Items.ELYTRA) {
+			return false;
+		}
+
+		return item instanceof SwordItem
+				|| item instanceof MiningToolItem
+				|| item instanceof BowItem
+				|| item instanceof CrossbowItem
+				|| item instanceof TridentItem
+				|| stack.isDamageable();
+	}
+
+	public static Level getLevel(ItemStack stack, EnhancementType type) {
+		NbtComponent component = stack.get(DataComponentTypes.CUSTOM_DATA);
+		if (component == null) {
+			return Level.EMPTY;
+		}
+
+		NbtCompound nbt = component.copyNbt();
+		if (nbt.contains(ROOT_KEY, 10)) {
+			NbtCompound enhancements = nbt.getCompound(ROOT_KEY);
+			if (enhancements.contains(type.id(), 10)) {
+				return readLevel(enhancements.getCompound(type.id()));
+			}
+		}
+
+		if (type == EnhancementType.CRIT) {
+			return readLegacyCritLevel(nbt);
+		}
+		return Level.EMPTY;
+	}
+
+	public static void setLevel(ItemStack stack, EnhancementType type, Level level) {
+		NbtComponent component = stack.get(DataComponentTypes.CUSTOM_DATA);
+		NbtCompound nbt = component == null ? new NbtCompound() : component.copyNbt();
+		NbtCompound enhancements = nbt.contains(ROOT_KEY, 10) ? nbt.getCompound(ROOT_KEY) : new NbtCompound();
+		NbtCompound typeNbt = new NbtCompound();
+		typeNbt.putInt(MAJOR_KEY, level.major());
+		typeNbt.putInt(MINOR_KEY, level.minor());
+		enhancements.put(type.id(), typeNbt);
+		nbt.put(ROOT_KEY, enhancements);
+		stack.set(DataComponentTypes.CUSTOM_DATA, NbtComponent.of(nbt));
+	}
+
+	@Nullable
+	public static UpgradeRequirement getNextRequirement(ItemStack stack, EnhancementType type) {
+		if (!isUpgradeableTool(stack)) {
+			return null;
+		}
+
+		Level current = getLevel(stack, type);
+		if (current.isMaxed()) {
+			return null;
+		}
+
+		Level next = current.next();
+		return new UpgradeRequirement(next, materialForMajor(next.major()), materialCost(next.minor()));
+	}
+
+	public static double getWeightedValue(ItemStack stack, EnhancementType type) {
+		return getWeightedValue(getLevel(stack, type));
+	}
+
+	public static double getWeightedValue(Level level) {
+		double value = 0.0D;
+		for (int major = 1; major <= MAX_MAJOR; major++) {
+			int levelsInMajor;
+			if (level.major() > major) {
+				levelsInMajor = MAX_MINOR;
+			} else if (level.major() == major) {
+				levelsInMajor = level.minor();
+			} else {
+				levelsInMajor = 0;
+			}
+			value += levelsInMajor * weightedValuePerMinor(major);
+		}
+		return value;
+	}
+
+	public static double getFlatChance(ItemStack stack, EnhancementType type) {
+		return getLevel(stack, type).totalLevels() / 100.0D;
+	}
+
+	public static double getDisplayValue(ItemStack stack, EnhancementType type) {
+		return switch (type) {
+			case CRIT, POWER -> getWeightedValue(stack, type);
+			case PETRIFY, INSTANT_KILL, EXPLOSION -> getFlatChance(stack, type);
+		};
+	}
+
+	public static double getCritChance(ItemStack stack) {
+		return getWeightedValue(stack, EnhancementType.CRIT);
+	}
+
+	public static double getPowerBonus(ItemStack stack) {
+		return getWeightedValue(stack, EnhancementType.POWER);
+	}
+
+	public static String formatPercent(double value) {
+		return String.format(Locale.ROOT, "%.1f%%", value * 100.0D);
+	}
+
+	private static Level readLevel(NbtCompound nbt) {
+		int major = clamp(nbt.getInt(MAJOR_KEY), 0, MAX_MAJOR);
+		int minor = clamp(nbt.getInt(MINOR_KEY), 0, MAX_MINOR);
+		if (major == 0 || minor == 0) {
+			return Level.EMPTY;
+		}
+		return new Level(major, minor);
+	}
+
+	private static Level readLegacyCritLevel(NbtCompound nbt) {
+		int major = clamp(nbt.getInt(LEGACY_CRIT_MAJOR_KEY), 0, MAX_MAJOR);
+		int minor = clamp(nbt.getInt(LEGACY_CRIT_MINOR_KEY), 0, MAX_MINOR);
+		if (major == 0 || minor == 0) {
+			return Level.EMPTY;
+		}
+		return new Level(major, minor);
+	}
+
+	private static double weightedValuePerMinor(int major) {
+		return switch (major) {
+			case 1 -> 0.001D;
+			case 2 -> 0.002D;
+			case 3 -> 0.005D;
+			case 4 -> 0.02D;
+			default -> 0.0D;
+		};
+	}
+
+	private static Item materialForMajor(int major) {
+		return switch (major) {
+			case 1 -> Items.IRON_INGOT;
+			case 2 -> Items.GOLD_INGOT;
+			case 3 -> Items.DIAMOND;
+			case 4 -> Items.EMERALD;
+			default -> Items.AIR;
+		};
+	}
+
+	private static int materialCost(int minor) {
+		return 1 << (minor - 1);
+	}
+
+	private static int clamp(int value, int min, int max) {
+		return Math.max(min, Math.min(max, value));
+	}
+
+	public record Level(int major, int minor) {
+		public static final Level EMPTY = new Level(0, 0);
+
+		public boolean isEmpty() {
+			return major == 0 || minor == 0;
+		}
+
+		public boolean isMaxed() {
+			return major >= MAX_MAJOR && minor >= MAX_MINOR;
+		}
+
+		public Level next() {
+			if (isEmpty()) {
+				return new Level(1, 1);
+			}
+			if (minor < MAX_MINOR) {
+				return new Level(major, minor + 1);
+			}
+			return new Level(major + 1, 1);
+		}
+
+		public int totalLevels() {
+			if (isEmpty()) {
+				return 0;
+			}
+			return (major - 1) * MAX_MINOR + minor;
+		}
+
+		public String display() {
+			if (isEmpty()) {
+				return "-";
+			}
+			return toRoman(major) + "-" + minor;
+		}
+	}
+
+	public record UpgradeRequirement(Level nextLevel, Item material, int count) {
+	}
+
+	private static String toRoman(int value) {
+		return switch (value) {
+			case 1 -> "I";
+			case 2 -> "II";
+			case 3 -> "III";
+			case 4 -> "IV";
+			default -> "-";
+		};
+	}
+}
