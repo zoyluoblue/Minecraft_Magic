@@ -4,7 +4,7 @@
 
 ## 演示
 
-[![YouTube 视频演示](https://www.youtube.com/watch?v=J3A4pPPDw4k/0.jpg)](https://www.youtube.com/watch?v=J3A4pPPDw4k)
+[![YouTube 视频演示](./demo/magic_1.png)](https://www.youtube.com/watch?v=J3A4pPPDw4k)
 
 ![强化台演示 1](./demo/magic_1.png)
 
