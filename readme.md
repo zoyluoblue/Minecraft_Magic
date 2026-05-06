@@ -4,7 +4,10 @@
 
 ## 演示
 
-[![YouTube 视频演示](./demo/magic_1.png)](https://www.youtube.com/watch?v=J3A4pPPDw4k)
+<video src="[./demo/magic.mp4](https://www.youtube.com/watch?v=J3A4pPPDw4k)" controls width="100%"></video>
+
+[无法播放时点击查看演示视频](https://www.youtube.com/watch?v=J3A4pPPDw4k)
+
 
 ![强化台演示 1](./demo/magic_1.png)
 
