@@ -4,9 +4,10 @@
 
 ## 演示
 
-<video src="./demo/magic.mp4" controls width="100%"></video>
+<video src="[./demo/magic.mp4](https://www.youtube.com/watch?v=J3A4pPPDw4k)" controls width="100%"></video>
 
-[无法播放时点击查看演示视频](./demo/magic.mp4)
+[无法播放时点击查看演示视频](https://www.youtube.com/watch?v=J3A4pPPDw4k)
+
 
 ![强化台演示 1](./demo/magic_1.png)
 
@@ -600,4 +601,149 @@ I-3 = 3 * 0.1% = 0.3%
 
 ```text
 build/libs/magic-fabric-1.21.3-loader0.18.4-1.0.0.jar
+```
+
+## 鞋子强化补充说明
+
+鞋子现在可以放入强化台左侧槽位进行强化。放入鞋子时，强化台会显示 4 个中文强化按钮：
+
+| 按钮 | 强化类型 | NBT ID |
+| --- | --- | --- |
+| 速度 | 移动速度强化 | `speed` |
+| 高度 | 跳跃高度强化 | `height` |
+| 水魂 | 水上行走时间强化 | `water_soul` |
+| 火魂 | 火上行走时间和防灼烧强化 | `fire_soul` |
+
+鞋子强化的等级、材料和升级消耗规则与暴击强化一致：
+
+| 大等级 | 等级范围 | 所需材料 |
+| --- | --- | --- |
+| I | 1-10 级 | 铁锭 |
+| II | 11-20 级 | 金锭 |
+| III | 21-30 级 | 钻石 |
+| IV | 31-40 级 | 绿宝石 |
+
+每个大等级内部，小等级消耗数量仍为：
+
+```text
+目标小等级消耗 = 2 ^ (目标小等级 - 1)
+```
+
+### 速度
+
+每强化 1 级，走路和跑步速度增加 10%。跳跃腾空期间也会获得对应的空中加速，因此强化后的鞋子可以跳得更远。
+
+计算公式：
+
+```text
+速度加成 = 总等级 * 10%
+```
+
+满级 `IV-10` 为 40 级，因此最高速度加成为：
+
+```text
+40 * 10% = 400%
+```
+
+### 高度
+
+每强化 1 级，可跳跃高度增加 10%。
+
+计算公式：
+
+```text
+跳跃高度加成 = 总等级 * 10%
+```
+
+高度强化还会降低高空摔落伤害。
+
+```text
+摔落伤害降低比例 = 总等级 * 2 / 100
+```
+
+满级 `IV-10` 时：
+
+```text
+跳跃高度加成 = 400%
+摔落伤害降低 = 80%
+实际承受摔落伤害 = 原伤害 * 20%
+```
+
+### 水魂
+
+强化后可以在水上行走和跑步。每强化 1 级，可在水上行走的时间增加 1 秒，按真实世界时间计算。
+
+```text
+水上行走秒数上限 = 总等级
+```
+
+剩余时间恢复规则：
+
+- 在水上行走时，每 1 秒消耗 1 秒剩余时间。
+- 离开水面后，每 1 秒恢复 1 秒剩余时间。
+- 最多恢复到当前强化等级的上限。
+- 脱下鞋子不会直接回满，也只能按每秒 1 秒慢慢恢复。
+
+### 火魂
+
+强化后可以在岩浆上行走和跑步，并免疫火焰、岩浆、灼烧、营火和岩浆块造成的灼烧伤害。每强化 1 级，可在火上行走的时间增加 1 秒，按真实世界时间计算。
+
+```text
+火上行走秒数上限 = 总等级
+```
+
+剩余时间恢复规则：
+
+- 在岩浆上行走时，每 1 秒消耗 1 秒剩余时间。
+- 离开岩浆后，每 1 秒恢复 1 秒剩余时间。
+- 最多恢复到当前强化等级的上限。
+- 脱下鞋子不会直接回满，也只能按每秒 1 秒慢慢恢复。
+
+### 左下角显示
+
+玩家持有或装备已强化物品时，左下角会从上到下显示装备位置、物品名称、强化类型、强化等级和强化数值。
+
+水魂、火魂会显示剩余秒数。比如 `I-10` 的水魂上限为 10 秒，开始在水上行走后会显示倒计时。
+
+按 `F9` 可以显示或隐藏左下角强化数值。
+
+### 鞋子强化获取代码
+
+给一双钻石鞋设置四种鞋子强化全部满级：
+
+```mcfunction
+/give @p minecraft:diamond_boots[minecraft:custom_data={MagicEnhancements:{speed:{Major:4,Minor:10},height:{Major:4,Minor:10},water_soul:{Major:4,Minor:10},fire_soul:{Major:4,Minor:10}}}] 1
+```
+
+给一双下界合金鞋设置四种鞋子强化全部满级：
+
+```mcfunction
+/give @p minecraft:netherite_boots[minecraft:custom_data={MagicEnhancements:{speed:{Major:4,Minor:10},height:{Major:4,Minor:10},water_soul:{Major:4,Minor:10},fire_soul:{Major:4,Minor:10}}}] 1
+```
+
+给一双下界合金鞋设置自定义等级：
+
+```mcfunction
+/give @p minecraft:netherite_boots[minecraft:custom_data={MagicEnhancements:{speed:{Major:4,Minor:10},height:{Major:2,Minor:10},water_soul:{Major:1,Minor:10},fire_soul:{Major:3,Minor:10}}}] 1
+```
+
+对应效果：
+
+| 强化类型 | 等级 | 数值 |
+| --- | --- | ---: |
+| 速度 | IV-10 | 400.0% |
+| 高度 | II-10 | 200.0%，摔落伤害降低 40.0% |
+| 水魂 | I-10 | 10 秒 |
+| 火魂 | III-10 | 30 秒 |
+
+只设置水魂 `I-10` 的钻石鞋：
+
+```mcfunction
+/give @p minecraft:diamond_boots[minecraft:custom_data={MagicEnhancements:{water_soul:{Major:1,Minor:10}}}] 1
+```
+
+只设置火魂 `I-10` 的钻石鞋：
+
+```mcfunction
+/give @p minecraft:diamond_boots[minecraft:custom_data={MagicEnhancements:{fire_soul:{Major:1,Minor:10}}}] 1
 ```

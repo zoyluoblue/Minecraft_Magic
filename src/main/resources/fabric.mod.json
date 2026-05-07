@@ -3,7 +3,7 @@
 	"id": "magic",
 	"version": "${version}",
 	"name": "Magic",
-	"description": "Adds a strengthening table and critical chance weapon enhancements.",
+	"description": "Adds a strengthening table with weapon, tool, and boot enhancements.",
 	"authors": [
 		"zoyluo"
 	],

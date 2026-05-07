@@ -1,5 +1,6 @@
 package com.zoyluo.magic;
 
+import com.zoyluo.magic.client.gui.MagicEnhancementHud;
 import com.zoyluo.magic.client.gui.StrengtheningTableScreen;
 import com.zoyluo.magic.component.EnhancementSystem;
 import com.zoyluo.magic.component.EnhancementType;
@@ -13,16 +14,17 @@ public class MagicClient implements ClientModInitializer {
 	@Override
 	public void onInitializeClient() {
 		HandledScreens.register(Magic.STRENGTHENING_TABLE_SCREEN_HANDLER, StrengtheningTableScreen::new);
+		MagicEnhancementHud.register();
 
 		ItemTooltipCallback.EVENT.register((stack, context, type, lines) -> {
-			for (EnhancementType enhancementType : EnhancementType.values()) {
+			for (EnhancementType enhancementType : EnhancementSystem.getApplicableTypes(stack)) {
 				EnhancementSystem.Level level = EnhancementSystem.getLevel(stack, enhancementType);
 				if (!level.isEmpty()) {
 					lines.add(Text.translatable(
 							"tooltip.magic.enhancement",
 							Text.translatable(enhancementType.translationKey()),
 							level.display(),
-							EnhancementSystem.formatPercent(EnhancementSystem.getDisplayValue(stack, enhancementType))
+							EnhancementSystem.formatDisplayValue(stack, enhancementType)
 					).formatted(Formatting.GOLD));
 				}
 			}

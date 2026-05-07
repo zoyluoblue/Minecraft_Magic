@@ -3,6 +3,8 @@
 	"package": "com.zoyluo.magic.mixin",
 	"compatibilityLevel": "JAVA_21",
 	"mixins": [
+		"EntityMixin",
+		"LivingEntityMixin",
 		"PlayerEntityMixin"
 	],
 	"injectors": {

@@ -2,6 +2,8 @@ package com.zoyluo.magic.component;
 
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.NbtComponent;
+import net.minecraft.component.type.EquippableComponent;
+import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.item.ArmorItem;
 import net.minecraft.item.BowItem;
 import net.minecraft.item.CrossbowItem;
@@ -14,6 +16,8 @@ import net.minecraft.item.TridentItem;
 import net.minecraft.nbt.NbtCompound;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 
 public final class EnhancementSystem {
@@ -29,6 +33,36 @@ public final class EnhancementSystem {
 	}
 
 	public static boolean isUpgradeableTool(ItemStack stack) {
+		return isUpgradeableWeaponOrTool(stack) || isUpgradeableBoots(stack);
+	}
+
+	public static boolean isUpgradeableBoots(ItemStack stack) {
+		if (stack.isEmpty() || !(stack.getItem() instanceof ArmorItem)) {
+			return false;
+		}
+
+		EquippableComponent equippable = stack.get(DataComponentTypes.EQUIPPABLE);
+		return equippable != null && equippable.slot() == EquipmentSlot.FEET;
+	}
+
+	public static List<EnhancementType> getApplicableTypes(ItemStack stack) {
+		List<EnhancementType> types = new ArrayList<>();
+		for (EnhancementType type : EnhancementType.values()) {
+			if (isApplicable(stack, type)) {
+				types.add(type);
+			}
+		}
+		return types;
+	}
+
+	public static boolean isApplicable(ItemStack stack, EnhancementType type) {
+		if (isUpgradeableBoots(stack)) {
+			return type.isBootsEnhancement();
+		}
+		return isUpgradeableWeaponOrTool(stack) && type.isWeaponEnhancement();
+	}
+
+	private static boolean isUpgradeableWeaponOrTool(ItemStack stack) {
 		if (stack.isEmpty()) {
 			return false;
 		}
@@ -80,7 +114,7 @@ public final class EnhancementSystem {
 
 	@Nullable
 	public static UpgradeRequirement getNextRequirement(ItemStack stack, EnhancementType type) {
-		if (!isUpgradeableTool(stack)) {
+		if (!isApplicable(stack, type)) {
 			return null;
 		}
 
@@ -121,6 +155,8 @@ public final class EnhancementSystem {
 		return switch (type) {
 			case CRIT, POWER -> getWeightedValue(stack, type);
 			case PETRIFY, INSTANT_KILL, EXPLOSION -> getFlatChance(stack, type);
+			case SPEED, HEIGHT -> getBootPercentBonus(stack, type);
+			case WATER_SOUL, FIRE_SOUL -> getSoulSeconds(stack, type);
 		};
 	}
 
@@ -132,8 +168,23 @@ public final class EnhancementSystem {
 		return getWeightedValue(stack, EnhancementType.POWER);
 	}
 
+	public static double getBootPercentBonus(ItemStack stack, EnhancementType type) {
+		return Math.min(4.0D, getLevel(stack, type).totalLevels() * 0.1D);
+	}
+
+	public static int getSoulSeconds(ItemStack stack, EnhancementType type) {
+		return Math.min(40, getLevel(stack, type).totalLevels());
+	}
+
 	public static String formatPercent(double value) {
 		return String.format(Locale.ROOT, "%.1f%%", value * 100.0D);
+	}
+
+	public static String formatDisplayValue(ItemStack stack, EnhancementType type) {
+		return switch (type) {
+			case WATER_SOUL, FIRE_SOUL -> getSoulSeconds(stack, type) + "秒";
+			default -> formatPercent(getDisplayValue(stack, type));
+		};
 	}
 
 	private static Level readLevel(NbtCompound nbt) {

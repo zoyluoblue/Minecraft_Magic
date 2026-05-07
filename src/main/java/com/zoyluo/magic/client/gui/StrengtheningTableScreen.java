@@ -14,6 +14,7 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 
 import java.util.EnumMap;
+import java.util.List;
 import java.util.Map;
 
 public class StrengtheningTableScreen extends HandledScreen<StrengtheningTableScreenHandler> {
@@ -30,22 +31,22 @@ public class StrengtheningTableScreen extends HandledScreen<StrengtheningTableSc
 	protected void init() {
 		super.init();
 		enhancementButtons.clear();
-		int buttonX = x + 8;
 		for (EnhancementType type : EnhancementType.values()) {
 			ButtonWidget button = ButtonWidget.builder(Text.translatable(type.translationKey()), clicked -> {
 				if (client != null && client.interactionManager != null) {
 					client.interactionManager.clickButton(handler.syncId, type.buttonId());
 				}
-			}).dimensions(buttonX + type.buttonId() * 33, y + 48, 31, 18).build();
+			}).dimensions(x + 8, y + 48, 31, 18).build();
 			enhancementButtons.put(type, button);
 			addDrawableChild(button);
 		}
+		layoutEnhancementButtons();
 	}
 
 	@Override
 	protected void handledScreenTick() {
 		super.handledScreenTick();
-		enhancementButtons.forEach((type, button) -> button.active = handler.canUpgrade(type));
+		layoutEnhancementButtons();
 	}
 
 	@Override
@@ -73,7 +74,7 @@ public class StrengtheningTableScreen extends HandledScreen<StrengtheningTableSc
 		}
 
 		int lineY = 70;
-		for (EnhancementType type : EnhancementType.values()) {
+		for (EnhancementType type : EnhancementSystem.getApplicableTypes(tool)) {
 			EnhancementSystem.Level level = EnhancementSystem.getLevel(tool, type);
 			Text levelText = level.isEmpty()
 					? Text.translatable("gui.magic.enhancement_empty", Text.translatable(type.translationKey())).formatted(Formatting.GRAY)
@@ -81,7 +82,7 @@ public class StrengtheningTableScreen extends HandledScreen<StrengtheningTableSc
 							"gui.magic.enhancement_status",
 							Text.translatable(type.translationKey()),
 							level.display(),
-							EnhancementSystem.formatPercent(EnhancementSystem.getDisplayValue(tool, type))
+							EnhancementSystem.formatDisplayValue(tool, type)
 					).formatted(Formatting.GOLD);
 			context.drawText(textRenderer, levelText, 8, lineY, 0xF2F5F7, false);
 			lineY += 10;
@@ -99,7 +100,7 @@ public class StrengtheningTableScreen extends HandledScreen<StrengtheningTableSc
 	private void renderEnhancementTooltip(DrawContext context, int mouseX, int mouseY) {
 		for (EnhancementType type : EnhancementType.values()) {
 			ButtonWidget button = enhancementButtons.get(type);
-			if (button == null || !button.isHovered()) {
+			if (button == null || !button.visible || !button.isHovered()) {
 				continue;
 			}
 
@@ -120,6 +121,25 @@ public class StrengtheningTableScreen extends HandledScreen<StrengtheningTableSc
 			}
 			context.drawTooltip(textRenderer, tooltip, mouseX, mouseY);
 			return;
+		}
+	}
+
+	private void layoutEnhancementButtons() {
+		List<EnhancementType> visibleTypes = EnhancementSystem.getApplicableTypes(handler.getToolStack());
+		int buttonX = x + 8;
+		for (EnhancementType type : EnhancementType.values()) {
+			ButtonWidget button = enhancementButtons.get(type);
+			if (button == null) {
+				continue;
+			}
+
+			int visibleIndex = visibleTypes.indexOf(type);
+			button.visible = visibleIndex >= 0;
+			button.active = button.visible && handler.canUpgrade(type);
+			if (button.visible) {
+				button.setX(buttonX + visibleIndex * 33);
+				button.setY(y + 48);
+			}
 		}
 	}
 
