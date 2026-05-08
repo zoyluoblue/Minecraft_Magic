@@ -1,22 +1,15 @@
 package com.zoyluo.magic.component;
 
-import com.zoyluo.magic.Magic;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.attribute.EntityAttribute;
-import net.minecraft.entity.attribute.EntityAttributeInstance;
-import net.minecraft.entity.attribute.EntityAttributeModifier;
-import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.damage.DamageTypes;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.item.ItemStack;
-import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.registry.tag.FluidTags;
 import net.minecraft.registry.tag.TagKey;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
@@ -28,8 +21,6 @@ import java.util.Map;
 import java.util.UUID;
 
 public final class BootEnhancementEffects {
-	private static final Identifier SPEED_MODIFIER_ID = Magic.id("boots_speed");
-	private static final Identifier HEIGHT_MODIFIER_ID = Magic.id("boots_height");
 	private static final Map<UUID, SoulTimer> WATER_SOUL_TIMERS = new HashMap<>();
 	private static final Map<UUID, SoulTimer> FIRE_SOUL_TIMERS = new HashMap<>();
 
@@ -42,8 +33,6 @@ public final class BootEnhancementEffects {
 		boolean nearLava = isNearFluid(player, FluidTags.LAVA);
 		updateSoulTimer(player, EnhancementType.WATER_SOUL, WATER_SOUL_TIMERS, nearWater);
 		updateSoulTimer(player, EnhancementType.FIRE_SOUL, FIRE_SOUL_TIMERS, nearLava);
-		updateAttribute(player, EntityAttributes.MOVEMENT_SPEED, SPEED_MODIFIER_ID, getSpeedBonus(player));
-		updateAttribute(player, EntityAttributes.JUMP_STRENGTH, HEIGHT_MODIFIER_ID, EnhancementSystem.getBootPercentBonus(boots, EnhancementType.HEIGHT));
 
 		if (EnhancementSystem.getSoulSeconds(boots, EnhancementType.FIRE_SOUL) > 0) {
 			player.extinguish();
@@ -71,16 +60,6 @@ public final class BootEnhancementEffects {
 
 	public static boolean canUseFireSoulWalk(PlayerEntity player) {
 		return canUseSoulWalk(player, player.getEquippedStack(EquipmentSlot.FEET), EnhancementType.FIRE_SOUL, FIRE_SOUL_TIMERS);
-	}
-
-	public static double getSpeedBonus(PlayerEntity player) {
-		return EnhancementSystem.getBootPercentBonus(player.getEquippedStack(EquipmentSlot.FEET), EnhancementType.SPEED);
-	}
-
-	public static double getFallDamageReduction(PlayerEntity player) {
-		ItemStack boots = player.getEquippedStack(EquipmentSlot.FEET);
-		int levels = EnhancementSystem.getLevel(boots, EnhancementType.HEIGHT).totalLevels();
-		return Math.min(0.8D, levels * 0.02D);
 	}
 
 	public static int getSoulRemainingSeconds(PlayerEntity player, EnhancementType type) {
@@ -209,28 +188,6 @@ public final class BootEnhancementEffects {
 			}
 		}
 		return highest;
-	}
-
-	private static void updateAttribute(PlayerEntity player, RegistryEntry<EntityAttribute> attribute, Identifier id, double value) {
-		EntityAttributeInstance instance = player.getAttributeInstance(attribute);
-		if (instance == null) {
-			return;
-		}
-
-		EntityAttributeModifier current = instance.getModifier(id);
-		if (value <= 0.0D) {
-			if (current != null) {
-				instance.removeModifier(id);
-			}
-			return;
-		}
-
-		if (current != null && Double.compare(current.value(), value) == 0) {
-			return;
-		}
-
-		instance.removeModifier(id);
-		instance.addTemporaryModifier(new EntityAttributeModifier(id, value, EntityAttributeModifier.Operation.ADD_MULTIPLIED_BASE));
 	}
 
 	private static boolean isNearFluid(PlayerEntity player, TagKey<Fluid> fluidTag) {

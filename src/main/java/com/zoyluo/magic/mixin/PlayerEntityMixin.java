@@ -4,6 +4,9 @@ import com.zoyluo.magic.component.BootEnhancementEffects;
 import com.zoyluo.magic.component.EnhancementEffects;
 import com.zoyluo.magic.component.EnhancementSystem;
 import com.zoyluo.magic.component.EnhancementType;
+import com.zoyluo.magic.component.HelmetEnhancementEffects;
+import com.zoyluo.magic.component.LegEnhancementEffects;
+import com.zoyluo.magic.component.NailGunEffects;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.damage.DamageSource;
@@ -44,7 +47,11 @@ public abstract class PlayerEntityMixin {
 
 	@Inject(method = "tick", at = @At("TAIL"))
 	private void magic$tickBootEnhancements(CallbackInfo ci) {
-		BootEnhancementEffects.tickPlayer((PlayerEntity) (Object) this);
+		PlayerEntity player = (PlayerEntity) (Object) this;
+		BootEnhancementEffects.tickPlayer(player);
+		LegEnhancementEffects.tickPlayer(player);
+		HelmetEnhancementEffects.tickPlayer(player);
+		NailGunEffects.tickPlayer(player);
 	}
 
 	@Inject(method = "damage", at = @At("HEAD"), cancellable = true)

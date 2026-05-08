@@ -3,6 +3,8 @@ package com.zoyluo.magic;
 import com.zoyluo.magic.block.StrengtheningTableBlock;
 import com.zoyluo.magic.block.StrengtheningTableBlockEntity;
 import com.zoyluo.magic.component.EnhancementEffects;
+import com.zoyluo.magic.component.HelmetEnhancementEffects;
+import com.zoyluo.magic.component.NailGunEffects;
 import com.zoyluo.magic.screen.StrengtheningTableScreenHandler;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.itemgroup.v1.ItemGroupEvents;
@@ -64,6 +66,8 @@ public class Magic implements ModInitializer {
 	public void onInitialize() {
 		ItemGroupEvents.modifyEntriesEvent(ItemGroups.FUNCTIONAL).register(entries -> entries.add(STRENGTHENING_TABLE_ITEM));
 		EnhancementEffects.register();
+		HelmetEnhancementEffects.register();
+		NailGunEffects.register();
 	}
 
 	public static Identifier id(String path) {

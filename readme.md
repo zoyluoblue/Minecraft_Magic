@@ -705,7 +705,7 @@ build/libs/magic-fabric-1.21.3-loader0.18.4-1.0.0.jar
 
 水魂、火魂会显示剩余秒数。比如 `I-10` 的水魂上限为 10 秒，开始在水上行走后会显示倒计时。
 
-按 `F9` 可以显示或隐藏左下角强化数值。
+按 `F9` 会打开强化数值显示选择界面。每条可显示数值右侧都可以切换“开启”或“关闭”；点击“确定”后只显示开启的数值，点击“取消”则关闭所有左下角强化数值显示。
 
 ### 鞋子强化获取代码
 
@@ -746,4 +746,179 @@ build/libs/magic-fabric-1.21.3-loader0.18.4-1.0.0.jar
 
 ```mcfunction
 /give @p minecraft:diamond_boots[minecraft:custom_data={MagicEnhancements:{fire_soul:{Major:1,Minor:10}}}] 1
+```
+
+## 当前护甲强化完整说明
+
+本节按当前模组功能整理护甲强化规则。护甲类物品也可以放入强化台左侧槽位，材料、等级和消耗规则与武器强化一致：4 个大等级，每个大等级 10 个小等级，最高 `IV-10`，总等级最高 40 级。
+
+### 护甲可强化类型
+
+| 装备部位 | 强化按钮 | NBT ID | 满级数值 |
+| --- | --- | --- | --- |
+| 鞋子 | 水魂 | `water_soul` | 40 秒水上行走 |
+| 鞋子 | 火魂 | `fire_soul` | 40 秒岩浆行走和防灼烧 |
+| 护腿/裤子 | 速度 | `speed` | 400.0% 移动加成 |
+| 护腿/裤子 | 高度 | `height` | 400.0% 跳跃加成，80.0% 摔落伤害降低 |
+| 头盔 | 照明 | `illumination` | 10 格移动照明范围 |
+| 头盔 | 探矿 | `ore_seeker` | 100.0 格探测范围 |
+| 胸甲/衣服 | 射钉枪 | `nail_gun` | 80.0 格射程 |
+
+### 鞋子
+
+鞋子只支持 `水魂` 和 `火魂`。
+
+水魂：
+
+```text
+水上行走秒数 = 总等级，最高 40 秒
+```
+
+- 可以在水面行走和跑步。
+- 在水上时每 1 秒消耗 1 秒剩余时间。
+- 离开水后每 1 秒恢复 1 秒剩余时间。
+- 脱下鞋子不会立即回满，只能按恢复规则慢慢恢复。
+
+火魂：
+
+```text
+岩浆行走秒数 = 总等级，最高 40 秒
+```
+
+- 可以在任意岩浆表面行走和跑步。
+- 有火魂强化时免疫火焰、岩浆、灼烧、营火和岩浆块伤害。
+- 在岩浆上时每 1 秒消耗 1 秒剩余时间。
+- 离开岩浆后每 1 秒恢复 1 秒剩余时间。
+- 脱下鞋子不会立即回满，只能按恢复规则慢慢恢复。
+
+### 护腿/裤子
+
+护腿/裤子支持 `速度` 和 `高度`。
+
+速度：
+
+```text
+速度加成 = 总等级 * 10%，最高 400.0%
+```
+
+- 走路和跑步都会获得速度加成。
+- 跳跃腾空期间也会获得空中加速，因此会跳得更远。
+
+高度：
+
+```text
+跳跃高度加成 = 总等级 * 10%，最高 400.0%
+摔落伤害降低 = 总等级 * 2%，最高 80.0%
+```
+
+满级 `IV-10` 时只承受 20.0% 摔落伤害。
+
+### 头盔
+
+头盔支持 `照明` 和 `探矿`。
+
+照明：
+
+```text
+照明范围 = ceil(总等级 / 4)，最高 10 格
+```
+
+- 佩戴照明头盔时，会在玩家周围产生类似火把的可见亮度。
+- 强化等级越高，周围可照亮范围越大。
+
+探矿：
+
+```text
+探测范围 = 总等级 * 2.5 格，最高 100.0 格
+```
+
+- 支持探测：钻石、金子、铁、黑曜石、绿宝石。
+- 按 `F9` 打开强化数值显示选择界面，在“头盔 -> 探矿”下面选择要探测的矿物。
+- 佩戴有探矿强化的头盔后，屏幕上方会显示小箭头、矿物名称、距离和上下方向。
+- 多种矿物同时启用时，会指向选中目标中距离最近的矿物。
+
+### 胸甲/衣服
+
+胸甲/衣服支持 `射钉枪`。
+
+```text
+射程 = 总等级 * 2 格，最高 80.0 格
+```
+
+操作：
+
+- 按 `Alt + 1` 朝准心方向发射射钉枪。
+- 再次按 `Alt + 1` 或按 `Esc` 可以取消。
+- 射中方块后，玩家会被固定，不能移动。
+- 固定期间按空格键，会沿射钉枪连线直线飞向命中的方块。
+- 连线显示为黑色粗钢索，并带有枪口和钉头效果。
+- 牵引飞行速度约为普通走路速度的 2 倍。
+
+### F9 显示选择
+
+按 `F9` 会打开强化数值显示选择界面。界面按装备部位分组：
+
+```text
+主手武器 / 副手 / 头盔 / 胸甲 / 护腿 / 鞋子
+```
+
+- 每个大分类下可以单独勾选具体强化类型。
+- 头盔的探矿目标在 `头盔 -> 探矿` 下选择。
+- 点击“确定”后显示勾选的数值。
+- 点击“取消”后关闭所有左下角强化数值显示。
+
+### 护甲强化获取代码
+
+鞋子满级水魂和火魂：
+
+```mcfunction
+/give @p minecraft:diamond_boots[minecraft:custom_data={MagicEnhancements:{water_soul:{Major:4,Minor:10},fire_soul:{Major:4,Minor:10}}}] 1
+```
+
+护腿/裤子满级速度和高度：
+
+```mcfunction
+/give @p minecraft:diamond_leggings[minecraft:custom_data={MagicEnhancements:{speed:{Major:4,Minor:10},height:{Major:4,Minor:10}}}] 1
+```
+
+头盔满级照明和探矿：
+
+```mcfunction
+/give @p minecraft:diamond_helmet[minecraft:custom_data={MagicEnhancements:{illumination:{Major:4,Minor:10},ore_seeker:{Major:4,Minor:10}}}] 1
+```
+
+胸甲/衣服满级射钉枪：
+
+```mcfunction
+/give @p minecraft:diamond_chestplate[minecraft:custom_data={MagicEnhancements:{nail_gun:{Major:4,Minor:10}}}] 1
+```
+
+一套钻石护甲满级强化：
+
+```mcfunction
+/give @p minecraft:diamond_helmet[minecraft:custom_data={MagicEnhancements:{illumination:{Major:4,Minor:10},ore_seeker:{Major:4,Minor:10}}}] 1
+/give @p minecraft:diamond_chestplate[minecraft:custom_data={MagicEnhancements:{nail_gun:{Major:4,Minor:10}}}] 1
+/give @p minecraft:diamond_leggings[minecraft:custom_data={MagicEnhancements:{speed:{Major:4,Minor:10},height:{Major:4,Minor:10}}}] 1
+/give @p minecraft:diamond_boots[minecraft:custom_data={MagicEnhancements:{water_soul:{Major:4,Minor:10},fire_soul:{Major:4,Minor:10}}}] 1
+```
+
+一套下界合金护甲满级强化：
+
+```mcfunction
+/give @p minecraft:netherite_helmet[minecraft:custom_data={MagicEnhancements:{illumination:{Major:4,Minor:10},ore_seeker:{Major:4,Minor:10}}}] 1
+/give @p minecraft:netherite_chestplate[minecraft:custom_data={MagicEnhancements:{nail_gun:{Major:4,Minor:10}}}] 1
+/give @p minecraft:netherite_leggings[minecraft:custom_data={MagicEnhancements:{speed:{Major:4,Minor:10},height:{Major:4,Minor:10}}}] 1
+/give @p minecraft:netherite_boots[minecraft:custom_data={MagicEnhancements:{water_soul:{Major:4,Minor:10},fire_soul:{Major:4,Minor:10}}}] 1
+```
+
+自定义等级格式：
+
+```mcfunction
+/give @p minecraft:diamond_chestplate[minecraft:custom_data={MagicEnhancements:{nail_gun:{Major:大等级,Minor:小等级}}}] 1
+```
+
+示例：给钻石胸甲设置 `III-5` 射钉枪，射程为 50.0 格：
+
+```mcfunction
+/give @p minecraft:diamond_chestplate[minecraft:custom_data={MagicEnhancements:{nail_gun:{Major:3,Minor:5}}}] 1
 ```

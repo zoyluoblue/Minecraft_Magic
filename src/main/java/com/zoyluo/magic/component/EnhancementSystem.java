@@ -33,7 +33,7 @@ public final class EnhancementSystem {
 	}
 
 	public static boolean isUpgradeableTool(ItemStack stack) {
-		return isUpgradeableWeaponOrTool(stack) || isUpgradeableBoots(stack);
+		return isUpgradeableWeaponOrTool(stack) || isUpgradeableBoots(stack) || isUpgradeableHelmet(stack) || isUpgradeableLeggings(stack) || isUpgradeableChestplate(stack);
 	}
 
 	public static boolean isUpgradeableBoots(ItemStack stack) {
@@ -43,6 +43,33 @@ public final class EnhancementSystem {
 
 		EquippableComponent equippable = stack.get(DataComponentTypes.EQUIPPABLE);
 		return equippable != null && equippable.slot() == EquipmentSlot.FEET;
+	}
+
+	public static boolean isUpgradeableHelmet(ItemStack stack) {
+		if (stack.isEmpty() || !(stack.getItem() instanceof ArmorItem)) {
+			return false;
+		}
+
+		EquippableComponent equippable = stack.get(DataComponentTypes.EQUIPPABLE);
+		return equippable != null && equippable.slot() == EquipmentSlot.HEAD;
+	}
+
+	public static boolean isUpgradeableLeggings(ItemStack stack) {
+		if (stack.isEmpty() || !(stack.getItem() instanceof ArmorItem)) {
+			return false;
+		}
+
+		EquippableComponent equippable = stack.get(DataComponentTypes.EQUIPPABLE);
+		return equippable != null && equippable.slot() == EquipmentSlot.LEGS;
+	}
+
+	public static boolean isUpgradeableChestplate(ItemStack stack) {
+		if (stack.isEmpty() || !(stack.getItem() instanceof ArmorItem)) {
+			return false;
+		}
+
+		EquippableComponent equippable = stack.get(DataComponentTypes.EQUIPPABLE);
+		return equippable != null && equippable.slot() == EquipmentSlot.CHEST;
 	}
 
 	public static List<EnhancementType> getApplicableTypes(ItemStack stack) {
@@ -58,6 +85,15 @@ public final class EnhancementSystem {
 	public static boolean isApplicable(ItemStack stack, EnhancementType type) {
 		if (isUpgradeableBoots(stack)) {
 			return type.isBootsEnhancement();
+		}
+		if (isUpgradeableHelmet(stack)) {
+			return type.isHelmetEnhancement();
+		}
+		if (isUpgradeableLeggings(stack)) {
+			return type.isLegsEnhancement();
+		}
+		if (isUpgradeableChestplate(stack)) {
+			return type.isChestEnhancement();
 		}
 		return isUpgradeableWeaponOrTool(stack) && type.isWeaponEnhancement();
 	}
@@ -157,6 +193,9 @@ public final class EnhancementSystem {
 			case PETRIFY, INSTANT_KILL, EXPLOSION -> getFlatChance(stack, type);
 			case SPEED, HEIGHT -> getBootPercentBonus(stack, type);
 			case WATER_SOUL, FIRE_SOUL -> getSoulSeconds(stack, type);
+			case ILLUMINATION -> getIlluminationRadius(stack);
+			case ORE_SEEKER -> getOreSearchRange(stack);
+			case NAIL_GUN -> getNailGunRange(stack);
 		};
 	}
 
@@ -176,6 +215,22 @@ public final class EnhancementSystem {
 		return Math.min(40, getLevel(stack, type).totalLevels());
 	}
 
+	public static int getIlluminationRadius(ItemStack stack) {
+		int levels = getLevel(stack, EnhancementType.ILLUMINATION).totalLevels();
+		if (levels <= 0) {
+			return 0;
+		}
+		return Math.min(10, Math.ceilDiv(levels, 4));
+	}
+
+	public static double getOreSearchRange(ItemStack stack) {
+		return Math.min(100.0D, getLevel(stack, EnhancementType.ORE_SEEKER).totalLevels() * 2.5D);
+	}
+
+	public static double getNailGunRange(ItemStack stack) {
+		return Math.min(80.0D, getLevel(stack, EnhancementType.NAIL_GUN).totalLevels() * 2.0D);
+	}
+
 	public static String formatPercent(double value) {
 		return String.format(Locale.ROOT, "%.1f%%", value * 100.0D);
 	}
@@ -183,6 +238,8 @@ public final class EnhancementSystem {
 	public static String formatDisplayValue(ItemStack stack, EnhancementType type) {
 		return switch (type) {
 			case WATER_SOUL, FIRE_SOUL -> getSoulSeconds(stack, type) + "秒";
+			case ILLUMINATION -> getIlluminationRadius(stack) + "格";
+			case ORE_SEEKER, NAIL_GUN -> String.format(Locale.ROOT, "%.1f格", getDisplayValue(stack, type));
 			default -> formatPercent(getDisplayValue(stack, type));
 		};
 	}

@@ -1,6 +1,7 @@
 package com.zoyluo.magic.mixin;
 
 import com.zoyluo.magic.component.BootEnhancementEffects;
+import com.zoyluo.magic.component.LegEnhancementEffects;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.fluid.FluidState;
@@ -25,9 +26,9 @@ public abstract class LivingEntityMixin {
 	}
 
 	@Inject(method = "travelMidAir", at = @At("TAIL"))
-	private void magic$applyBootAirAcceleration(Vec3d movementInput, CallbackInfo ci) {
+	private void magic$applyLegAirAcceleration(Vec3d movementInput, CallbackInfo ci) {
 		if ((Object) this instanceof PlayerEntity player) {
-			double speedBonus = BootEnhancementEffects.getSpeedBonus(player);
+			double speedBonus = LegEnhancementEffects.getSpeedBonus(player);
 			if (speedBonus > 0.0D && movementInput.lengthSquared() > 0.0D) {
 				((LivingEntity) (Object) this).updateVelocity(getOffGroundSpeed() * (float) speedBonus, movementInput);
 			}
@@ -37,7 +38,7 @@ public abstract class LivingEntityMixin {
 	@Inject(method = "computeFallDamage", at = @At("RETURN"), cancellable = true)
 	private void magic$reduceHeightFallDamage(float fallDistance, float damageMultiplier, CallbackInfoReturnable<Integer> cir) {
 		if ((Object) this instanceof PlayerEntity player) {
-			double reduction = BootEnhancementEffects.getFallDamageReduction(player);
+			double reduction = LegEnhancementEffects.getFallDamageReduction(player);
 			if (reduction > 0.0D) {
 				cir.setReturnValue(Math.max(0, (int) Math.ceil(cir.getReturnValueI() * (1.0D - reduction))));
 			}

@@ -20,13 +20,16 @@ import net.minecraft.text.Text;
 import org.lwjgl.glfw.GLFW;
 
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 
 public final class MagicEnhancementHud {
 	private static final int X = 6;
 	private static final int LINE_HEIGHT = 10;
 	private static final int BOTTOM_MARGIN = 58;
-	private static boolean visible = true;
+	private static final Set<String> enabledKeys = new LinkedHashSet<>();
+	private static boolean configured;
 	private static KeyBinding toggleKeyBinding;
 
 	private MagicEnhancementHud() {
@@ -41,7 +44,9 @@ public final class MagicEnhancementHud {
 		));
 		ClientTickEvents.END_CLIENT_TICK.register(client -> {
 			while (toggleKeyBinding.wasPressed()) {
-				visible = !visible;
+				if (client.player != null) {
+					client.setScreen(new MagicEnhancementSelectionScreen(client.currentScreen));
+				}
 			}
 		});
 		HudRenderCallback.EVENT.register(MagicEnhancementHud::render);
@@ -50,37 +55,54 @@ public final class MagicEnhancementHud {
 	private static void render(DrawContext context, RenderTickCounter tickCounter) {
 		MinecraftClient client = MinecraftClient.getInstance();
 		PlayerEntity player = client.player;
-		if (!visible || player == null || client.options.hudHidden) {
+		if (player == null || client.options.hudHidden) {
 			return;
 		}
 
-		List<Text> lines = collectLines(player);
-		if (lines.isEmpty()) {
+		List<DisplayEntry> entries = collectDisplayEntries(player).stream()
+				.filter(MagicEnhancementHud::isEntryEnabled)
+				.toList();
+		if (entries.isEmpty()) {
 			return;
 		}
 
 		TextRenderer textRenderer = client.textRenderer;
-		int y = Math.max(6, client.getWindow().getScaledHeight() - BOTTOM_MARGIN - lines.size() * LINE_HEIGHT);
-		for (Text line : lines) {
-			int width = textRenderer.getWidth(line);
+		int y = Math.max(6, client.getWindow().getScaledHeight() - BOTTOM_MARGIN - entries.size() * LINE_HEIGHT);
+		for (DisplayEntry entry : entries) {
+			int width = textRenderer.getWidth(entry.text());
 			context.fill(X - 3, y - 1, X + width + 4, y + 9, 0x88000000);
-			context.drawText(textRenderer, line, X, y, 0xFFE9C46A, true);
+			context.drawText(textRenderer, entry.text(), X, y, 0xFFE9C46A, true);
 			y += LINE_HEIGHT;
 		}
 	}
 
-	private static List<Text> collectLines(PlayerEntity player) {
-		List<Text> lines = new ArrayList<>();
-		addStackLines(lines, player, "主手", player.getEquippedStack(EquipmentSlot.MAINHAND));
-		addStackLines(lines, player, "副手", player.getEquippedStack(EquipmentSlot.OFFHAND));
-		addStackLines(lines, player, "头盔", player.getEquippedStack(EquipmentSlot.HEAD));
-		addStackLines(lines, player, "胸甲", player.getEquippedStack(EquipmentSlot.CHEST));
-		addStackLines(lines, player, "护腿", player.getEquippedStack(EquipmentSlot.LEGS));
-		addStackLines(lines, player, "鞋子", player.getEquippedStack(EquipmentSlot.FEET));
-		return lines;
+	public static List<DisplayEntry> collectDisplayEntries(PlayerEntity player) {
+		List<DisplayEntry> entries = new ArrayList<>();
+		addStackLines(entries, player, "mainhand", "主手", player.getEquippedStack(EquipmentSlot.MAINHAND));
+		addStackLines(entries, player, "offhand", "副手", player.getEquippedStack(EquipmentSlot.OFFHAND));
+		addStackLines(entries, player, "head", "头盔", player.getEquippedStack(EquipmentSlot.HEAD));
+		addStackLines(entries, player, "chest", "胸甲", player.getEquippedStack(EquipmentSlot.CHEST));
+		addStackLines(entries, player, "legs", "护腿", player.getEquippedStack(EquipmentSlot.LEGS));
+		addStackLines(entries, player, "feet", "鞋子", player.getEquippedStack(EquipmentSlot.FEET));
+		return entries;
 	}
 
-	private static void addStackLines(List<Text> lines, PlayerEntity player, String slotLabel, ItemStack stack) {
+	public static boolean isEntryEnabled(DisplayEntry entry) {
+		return !configured || enabledKeys.contains(entry.key());
+	}
+
+	public static void setEnabledKeys(Set<String> keys) {
+		enabledKeys.clear();
+		enabledKeys.addAll(keys);
+		configured = true;
+	}
+
+	public static void clearEnabledKeys() {
+		enabledKeys.clear();
+		configured = true;
+	}
+
+	private static void addStackLines(List<DisplayEntry> entries, PlayerEntity player, String slotKey, String slotLabel, ItemStack stack) {
 		if (stack.isEmpty()) {
 			return;
 		}
@@ -88,7 +110,7 @@ public final class MagicEnhancementHud {
 		for (EnhancementType type : EnhancementSystem.getApplicableTypes(stack)) {
 			EnhancementSystem.Level level = EnhancementSystem.getLevel(stack, type);
 			if (!level.isEmpty()) {
-				lines.add(createLine(player, slotLabel, stack, type, level));
+				entries.add(new DisplayEntry(slotKey + ":" + type.id(), slotKey, slotLabel, Text.translatable(type.translationKey()), createLine(player, slotLabel, stack, type, level)));
 			}
 		}
 	}
@@ -105,5 +127,8 @@ public final class MagicEnhancementHud {
 			case WATER_SOUL, FIRE_SOUL -> "剩余 " + BootEnhancementEffects.getSoulRemainingSeconds(player, type) + "秒";
 			default -> "数值 " + EnhancementSystem.formatDisplayValue(stack, type);
 		};
+	}
+
+	public record DisplayEntry(String key, String slotKey, String slotLabel, Text selectionText, Text text) {
 	}
 }

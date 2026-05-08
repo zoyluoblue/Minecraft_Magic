@@ -8,10 +8,13 @@ public enum EnhancementType {
 	INSTANT_KILL(2, "instant_kill", "enhancement.magic.instant_kill", Target.WEAPON),
 	POWER(3, "power", "enhancement.magic.power", Target.WEAPON),
 	EXPLOSION(4, "explosion", "enhancement.magic.explosion", Target.WEAPON),
-	SPEED(5, "speed", "enhancement.magic.speed", Target.BOOTS),
-	HEIGHT(6, "height", "enhancement.magic.height", Target.BOOTS),
+	SPEED(5, "speed", "enhancement.magic.speed", Target.LEGS),
+	HEIGHT(6, "height", "enhancement.magic.height", Target.LEGS),
 	WATER_SOUL(7, "water_soul", "enhancement.magic.water_soul", Target.BOOTS),
-	FIRE_SOUL(8, "fire_soul", "enhancement.magic.fire_soul", Target.BOOTS);
+	FIRE_SOUL(8, "fire_soul", "enhancement.magic.fire_soul", Target.BOOTS),
+	ILLUMINATION(9, "illumination", "enhancement.magic.illumination", Target.HELMET),
+	ORE_SEEKER(10, "ore_seeker", "enhancement.magic.ore_seeker", Target.HELMET),
+	NAIL_GUN(11, "nail_gun", "enhancement.magic.nail_gun", Target.CHEST);
 
 	private final int buttonId;
 	private final String id;
@@ -45,6 +48,18 @@ public enum EnhancementType {
 		return target == Target.BOOTS;
 	}
 
+	public boolean isHelmetEnhancement() {
+		return target == Target.HELMET;
+	}
+
+	public boolean isLegsEnhancement() {
+		return target == Target.LEGS;
+	}
+
+	public boolean isChestEnhancement() {
+		return target == Target.CHEST;
+	}
+
 	@Nullable
 	public static EnhancementType byButtonId(int buttonId) {
 		for (EnhancementType type : values()) {
@@ -57,6 +72,9 @@ public enum EnhancementType {
 
 	private enum Target {
 		WEAPON,
-		BOOTS
+		BOOTS,
+		HELMET,
+		LEGS,
+		CHEST
 	}
 }
