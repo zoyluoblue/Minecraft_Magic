@@ -1,4 +1,9 @@
 .gradle/
 build/
+run/
+logs/
+*.jar
+*.class
+*.log
 .DS_Store
 **/.DS_Store
