@@ -29,7 +29,6 @@ public final class MagicEnhancementHud {
 	private static final int LINE_HEIGHT = 10;
 	private static final int BOTTOM_MARGIN = 58;
 	private static final Set<String> enabledKeys = new LinkedHashSet<>();
-	private static boolean configured;
 	private static KeyBinding toggleKeyBinding;
 
 	private MagicEnhancementHud() {
@@ -88,18 +87,16 @@ public final class MagicEnhancementHud {
 	}
 
 	public static boolean isEntryEnabled(DisplayEntry entry) {
-		return !configured || enabledKeys.contains(entry.key());
+		return enabledKeys.contains(entry.key());
 	}
 
 	public static void setEnabledKeys(Set<String> keys) {
 		enabledKeys.clear();
 		enabledKeys.addAll(keys);
-		configured = true;
 	}
 
 	public static void clearEnabledKeys() {
 		enabledKeys.clear();
-		configured = true;
 	}
 
 	private static void addStackLines(List<DisplayEntry> entries, PlayerEntity player, String slotKey, String slotLabel, ItemStack stack) {
