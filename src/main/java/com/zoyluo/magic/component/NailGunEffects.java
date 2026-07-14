@@ -3,7 +3,6 @@ package com.zoyluo.magic.component;
 import com.zoyluo.magic.network.NailGunActionPayload;
 import com.zoyluo.magic.network.NailGunStatePayload;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
-import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.entity.EquipmentSlot;
@@ -40,8 +39,6 @@ public final class NailGunEffects {
 	}
 
 	public static void register() {
-		PayloadTypeRegistry.playC2S().register(NailGunActionPayload.ID, NailGunActionPayload.CODEC);
-		PayloadTypeRegistry.playS2C().register(NailGunStatePayload.ID, NailGunStatePayload.CODEC);
 		ServerPlayNetworking.registerGlobalReceiver(NailGunActionPayload.ID, (payload, context) -> handleAction(context.player(), payload.action()));
 		ServerPlayConnectionEvents.DISCONNECT.register((handler, server) -> cancel(handler.player, false));
 		ServerLifecycleEvents.SERVER_STOPPING.register(NailGunEffects::clearAll);

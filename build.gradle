@@ -3,6 +3,8 @@ plugins {
 	id "maven-publish"
 }
 
+apply from: "gradle/verify-localization.gradle"
+
 version = project.mod_version
 group = project.maven_group
 

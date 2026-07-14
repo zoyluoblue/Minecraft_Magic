@@ -1,6 +1,10 @@
 # Magic 强化台模组规则说明
 
+简体中文 | [English](README.en.md)
+
 这是一个 Minecraft 1.21.3 Fabric 模组，基于 Fabric Loader 0.18.4。模组新增功能方块“强化台”，用于给工具和武器添加独立强化属性。
+
+模组内置简体中文和英文，玩家可通过 Minecraft 原生“设置 → 语言”切换。方块、界面、按钮、单位、HUD、Tooltip 和消息会跟随当前语言，无需额外配置界面。
 
 ## 演示
 
@@ -24,7 +28,7 @@
 - Fabric API：0.114.1+1.21.3
 - 模组 ID：`magic`
 - 强化台方块 ID：`magic:strengthening_table`
-- 打包文件：`build/libs/magic-fabric-1.21.3-loader0.18.4-1.0.0.jar`
+- 打包文件：`build/libs/magic-fabric-1.21.3-loader0.18.4-2.0.0.jar`
 
 ## 强化台获取方式
 
@@ -95,7 +99,7 @@ I I I
 - 鞘翅。
 - 没有耐久度且不属于工具或武器的普通物品。
 
-界面中有 5 个中文强化按钮：
+武器和工具会显示 5 个强化按钮，按钮文字随当前语言设置切换：
 
 | 按钮 | 强化类型 |
 | --- | --- |

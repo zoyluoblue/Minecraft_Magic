@@ -1,0 +1,66 @@
+import groovy.json.JsonSlurper
+
+def languageFiles = fileTree("src/main/resources/assets") {
+	include "*/lang/*.json"
+}
+
+tasks.register("verifyTranslations") {
+	group = "verification"
+	description = "Checks that en_us and zh_cn exist and expose identical, non-empty translation keys."
+	inputs.files(languageFiles)
+
+	doLast {
+		def languageDirectories = languageFiles.files.collect { it.parentFile }.unique()
+		if (languageDirectories.isEmpty()) {
+			throw new GradleException("No language directories found under src/main/resources/assets/*/lang")
+		}
+
+		languageDirectories.each { languageDirectory ->
+			def englishFile = new File(languageDirectory, "en_us.json")
+			def chineseFile = new File(languageDirectory, "zh_cn.json")
+			if (!englishFile.isFile() || !chineseFile.isFile()) {
+				throw new GradleException("${languageDirectory}: both en_us.json and zh_cn.json are required")
+			}
+
+			def english = new JsonSlurper().parse(englishFile) as Map
+			def chinese = new JsonSlurper().parse(chineseFile) as Map
+			def englishKeys = english.keySet() as Set
+			def chineseKeys = chinese.keySet() as Set
+			def missingChinese = englishKeys - chineseKeys
+			def missingEnglish = chineseKeys - englishKeys
+
+			if (!missingChinese.isEmpty() || !missingEnglish.isEmpty()) {
+				throw new GradleException("${languageDirectory}: translation keys differ; missing zh_cn=${missingChinese}, missing en_us=${missingEnglish}")
+			}
+			if (english == chinese) {
+				throw new GradleException("${languageDirectory}: en_us.json must not be a copy of zh_cn.json")
+			}
+
+			[en_us: english, zh_cn: chinese].each { locale, translations ->
+				def emptyKeys = translations.findAll { key, value -> !(value instanceof String) || value.trim().isEmpty() }.keySet()
+				if (!emptyKeys.isEmpty()) {
+					throw new GradleException("${languageDirectory}: ${locale} has empty or non-string values for ${emptyKeys}")
+				}
+			}
+
+			englishKeys.each { key ->
+				def englishPlaceholders = placeholderTypes(english[key])
+				def chinesePlaceholders = placeholderTypes(chinese[key])
+				if (englishPlaceholders != chinesePlaceholders) {
+					throw new GradleException("${languageDirectory}: placeholder mismatch for ${key}; en_us=${englishPlaceholders}, zh_cn=${chinesePlaceholders}")
+				}
+			}
+		}
+	}
+}
+
+def placeholderTypes(String value) {
+	def types = []
+	def matcher = value =~ /%(?:\\d+\\$)?([a-zA-Z])/
+	matcher.each { match -> types.add(match[1]) }
+	return types.sort()
+}
+
+tasks.named("check") {
+	dependsOn tasks.named("verifyTranslations")
+}

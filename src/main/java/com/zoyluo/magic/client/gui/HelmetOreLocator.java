@@ -61,7 +61,11 @@ public final class HelmetOreLocator {
 
 		List<OreSelectionEntry> entries = new ArrayList<>();
 		for (OreTarget target : OreTarget.values()) {
-			entries.add(new OreSelectionEntry(target.id(), Text.literal("探矿目标：" + target.label()), selectedTargets.contains(target)));
+			entries.add(new OreSelectionEntry(
+					target.id(),
+					Text.translatable("gui.magic.ore_target", Text.translatable(target.translationKey())),
+					selectedTargets.contains(target)
+			));
 		}
 		return entries;
 	}
@@ -113,7 +117,12 @@ public final class HelmetOreLocator {
 		double distance = Math.sqrt(player.getPos().squaredDistanceTo(locatedOre.pos().toCenterPos()));
 		int centerX = context.getScaledWindowWidth() / 2;
 		TextRenderer textRenderer = client.textRenderer;
-		Text label = Text.literal(locatedOre.target().label() + " " + String.format(Locale.ROOT, "%.1f", distance) + "格 " + verticalText(player, locatedOre.pos()));
+		Text label = Text.translatable(
+				"hud.magic.ore_locator",
+				Text.translatable(locatedOre.target().translationKey()),
+				String.format(Locale.ROOT, "%.1f", distance),
+				verticalText(player, locatedOre.pos())
+		);
 		int textWidth = textRenderer.getWidth(label);
 		MatrixStack matrices = context.getMatrices();
 		matrices.push();
@@ -258,15 +267,15 @@ public final class HelmetOreLocator {
 		return MathHelper.wrapDegrees(targetYaw - player.getYaw());
 	}
 
-	private static String verticalText(PlayerEntity player, BlockPos targetPos) {
+	private static Text verticalText(PlayerEntity player, BlockPos targetPos) {
 		int deltaY = targetPos.getY() - MathHelper.floor(player.getY());
 		if (deltaY > 1) {
-			return "上" + deltaY;
+			return Text.translatable("hud.magic.vertical.above", deltaY);
 		}
 		if (deltaY < -1) {
-			return "下" + Math.abs(deltaY);
+			return Text.translatable("hud.magic.vertical.below", Math.abs(deltaY));
 		}
-		return "同层";
+		return Text.translatable("hud.magic.vertical.same_level");
 	}
 
 	private static void drawArrow(DrawContext context, int centerX, int centerY, float angle) {
@@ -282,22 +291,22 @@ public final class HelmetOreLocator {
 	}
 
 	public enum OreTarget {
-		DIAMOND("diamond", "钻石", BlockTags.DIAMOND_ORES, null),
-		GOLD("gold", "金子", BlockTags.GOLD_ORES, null),
-		IRON("iron", "铁", BlockTags.IRON_ORES, null),
-		OBSIDIAN("obsidian", "黑曜石", null, Blocks.OBSIDIAN),
-		EMERALD("emerald", "绿宝石", BlockTags.EMERALD_ORES, null);
+		DIAMOND("diamond", "ore.magic.diamond", BlockTags.DIAMOND_ORES, null),
+		GOLD("gold", "ore.magic.gold", BlockTags.GOLD_ORES, null),
+		IRON("iron", "ore.magic.iron", BlockTags.IRON_ORES, null),
+		OBSIDIAN("obsidian", "ore.magic.obsidian", null, Blocks.OBSIDIAN),
+		EMERALD("emerald", "ore.magic.emerald", BlockTags.EMERALD_ORES, null);
 
 		private final String id;
-		private final String label;
+		private final String translationKey;
 		@Nullable
 		private final TagKey<Block> tag;
 		@Nullable
 		private final Block block;
 
-		OreTarget(String id, String label, @Nullable TagKey<Block> tag, @Nullable Block block) {
+		OreTarget(String id, String translationKey, @Nullable TagKey<Block> tag, @Nullable Block block) {
 			this.id = id;
-			this.label = label;
+			this.translationKey = translationKey;
 			this.tag = tag;
 			this.block = block;
 		}
@@ -306,8 +315,8 @@ public final class HelmetOreLocator {
 			return id;
 		}
 
-		public String label() {
-			return label;
+		public String translationKey() {
+			return translationKey;
 		}
 
 		private boolean matches(BlockState state) {

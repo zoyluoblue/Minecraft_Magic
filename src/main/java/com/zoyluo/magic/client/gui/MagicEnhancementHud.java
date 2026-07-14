@@ -15,7 +15,6 @@ import net.minecraft.client.util.InputUtil;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import org.lwjgl.glfw.GLFW;
 
@@ -77,12 +76,12 @@ public final class MagicEnhancementHud {
 
 	public static List<DisplayEntry> collectDisplayEntries(PlayerEntity player) {
 		List<DisplayEntry> entries = new ArrayList<>();
-		addStackLines(entries, player, "mainhand", "主手", player.getEquippedStack(EquipmentSlot.MAINHAND));
-		addStackLines(entries, player, "offhand", "副手", player.getEquippedStack(EquipmentSlot.OFFHAND));
-		addStackLines(entries, player, "head", "头盔", player.getEquippedStack(EquipmentSlot.HEAD));
-		addStackLines(entries, player, "chest", "胸甲", player.getEquippedStack(EquipmentSlot.CHEST));
-		addStackLines(entries, player, "legs", "护腿", player.getEquippedStack(EquipmentSlot.LEGS));
-		addStackLines(entries, player, "feet", "鞋子", player.getEquippedStack(EquipmentSlot.FEET));
+		addStackLines(entries, player, "mainhand", "slot.magic.mainhand", player.getEquippedStack(EquipmentSlot.MAINHAND));
+		addStackLines(entries, player, "offhand", "slot.magic.offhand", player.getEquippedStack(EquipmentSlot.OFFHAND));
+		addStackLines(entries, player, "head", "slot.magic.head", player.getEquippedStack(EquipmentSlot.HEAD));
+		addStackLines(entries, player, "chest", "slot.magic.chest", player.getEquippedStack(EquipmentSlot.CHEST));
+		addStackLines(entries, player, "legs", "slot.magic.legs", player.getEquippedStack(EquipmentSlot.LEGS));
+		addStackLines(entries, player, "feet", "slot.magic.feet", player.getEquippedStack(EquipmentSlot.FEET));
 		return entries;
 	}
 
@@ -99,7 +98,7 @@ public final class MagicEnhancementHud {
 		enabledKeys.clear();
 	}
 
-	private static void addStackLines(List<DisplayEntry> entries, PlayerEntity player, String slotKey, String slotLabel, ItemStack stack) {
+	private static void addStackLines(List<DisplayEntry> entries, PlayerEntity player, String slotKey, String slotTranslationKey, ItemStack stack) {
 		if (stack.isEmpty()) {
 			return;
 		}
@@ -107,25 +106,30 @@ public final class MagicEnhancementHud {
 		for (EnhancementType type : EnhancementSystem.getApplicableTypes(stack)) {
 			EnhancementSystem.Level level = EnhancementSystem.getLevel(stack, type);
 			if (!level.isEmpty()) {
+				Text slotLabel = Text.translatable(slotTranslationKey);
 				entries.add(new DisplayEntry(slotKey + ":" + type.id(), slotKey, slotLabel, Text.translatable(type.translationKey()), createLine(player, slotLabel, stack, type, level)));
 			}
 		}
 	}
 
-	private static Text createLine(PlayerEntity player, String slotLabel, ItemStack stack, EnhancementType type, EnhancementSystem.Level level) {
-		MutableText line = Text.literal(slotLabel + " ").append(stack.getName()).append(Text.literal("："));
-		line.append(Text.translatable(type.translationKey()));
-		line.append(Text.literal(" " + level.display() + "（" + getValueText(player, stack, type) + "）"));
-		return line;
+	private static Text createLine(PlayerEntity player, Text slotLabel, ItemStack stack, EnhancementType type, EnhancementSystem.Level level) {
+		return Text.translatable(
+				"hud.magic.enhancement_line",
+				slotLabel,
+				stack.getName(),
+				Text.translatable(type.translationKey()),
+				level.display(),
+				getValueText(player, stack, type)
+		);
 	}
 
-	private static String getValueText(PlayerEntity player, ItemStack stack, EnhancementType type) {
+	private static Text getValueText(PlayerEntity player, ItemStack stack, EnhancementType type) {
 		return switch (type) {
-			case WATER_SOUL, FIRE_SOUL -> "剩余 " + BootEnhancementEffects.getSoulRemainingSeconds(player, type) + "秒";
-			default -> "数值 " + EnhancementSystem.formatDisplayValue(stack, type);
+			case WATER_SOUL, FIRE_SOUL -> Text.translatable("value.magic.remaining_seconds", BootEnhancementEffects.getSoulRemainingSeconds(player, type));
+			default -> Text.translatable("value.magic.numeric", EnhancementSystem.formatDisplayValueText(stack, type));
 		};
 	}
 
-	public record DisplayEntry(String key, String slotKey, String slotLabel, Text selectionText, Text text) {
+	public record DisplayEntry(String key, String slotKey, Text slotLabel, Text selectionText, Text text) {
 	}
 }

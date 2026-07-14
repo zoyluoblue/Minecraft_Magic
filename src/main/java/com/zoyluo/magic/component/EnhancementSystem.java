@@ -14,6 +14,7 @@ import net.minecraft.item.MiningToolItem;
 import net.minecraft.item.SwordItem;
 import net.minecraft.item.TridentItem;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.text.Text;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
@@ -236,11 +237,15 @@ public final class EnhancementSystem {
 	}
 
 	public static String formatDisplayValue(ItemStack stack, EnhancementType type) {
+		return formatDisplayValueText(stack, type).getString();
+	}
+
+	public static Text formatDisplayValueText(ItemStack stack, EnhancementType type) {
 		return switch (type) {
-			case WATER_SOUL, FIRE_SOUL -> getSoulSeconds(stack, type) + "秒";
-			case ILLUMINATION -> getIlluminationRadius(stack) + "格";
-			case ORE_SEEKER, NAIL_GUN -> String.format(Locale.ROOT, "%.1f格", getDisplayValue(stack, type));
-			default -> formatPercent(getDisplayValue(stack, type));
+			case WATER_SOUL, FIRE_SOUL -> Text.translatable("value.magic.seconds", getSoulSeconds(stack, type));
+			case ILLUMINATION -> Text.translatable("value.magic.blocks", getIlluminationRadius(stack));
+			case ORE_SEEKER, NAIL_GUN -> Text.translatable("value.magic.blocks", String.format(Locale.ROOT, "%.1f", getDisplayValue(stack, type)));
+			default -> Text.literal(formatPercent(getDisplayValue(stack, type)));
 		};
 	}
 

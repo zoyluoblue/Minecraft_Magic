@@ -27,7 +27,7 @@ public class MagicEnhancementSelectionScreen extends Screen {
 	private int scrollOffset;
 
 	public MagicEnhancementSelectionScreen(Screen parent) {
-		super(Text.literal("强化数值显示"));
+		super(Text.translatable("screen.magic.enhancement_selection.title"));
 		this.parent = parent;
 		PlayerEntity player = MinecraftClient.getInstance().player;
 		if (player != null) {
@@ -38,7 +38,7 @@ public class MagicEnhancementSelectionScreen extends Screen {
 			}
 			List<HelmetOreLocator.OreSelectionEntry> oreEntries = HelmetOreLocator.collectSelectionEntries(player);
 			for (SlotGroup group : groups.values()) {
-				entries.add(EntryState.group(group.key, Text.literal(group.label), group.hasEnabledEntry()));
+				entries.add(EntryState.group(group.key, group.label, group.hasEnabledEntry()));
 				for (MagicEnhancementHud.DisplayEntry entry : group.entries) {
 					entries.add(EntryState.display(entry, group.key));
 					if (entry.key().endsWith(":ore_seeker")) {
@@ -54,10 +54,10 @@ public class MagicEnhancementSelectionScreen extends Screen {
 	@Override
 	protected void init() {
 		int buttonY = height - 32;
-		addDrawableChild(ButtonWidget.builder(Text.literal("确定"), button -> confirm())
+		addDrawableChild(ButtonWidget.builder(Text.translatable("gui.magic.confirm"), button -> confirm())
 				.dimensions(width / 2 - 108, buttonY, 96, 20)
 				.build());
-		addDrawableChild(ButtonWidget.builder(Text.literal("取消"), button -> cancel())
+		addDrawableChild(ButtonWidget.builder(Text.translatable("gui.magic.cancel"), button -> cancel())
 				.dimensions(width / 2 + 12, buttonY, 96, 20)
 				.build());
 		clampScrollOffset();
@@ -75,7 +75,7 @@ public class MagicEnhancementSelectionScreen extends Screen {
 		context.drawText(textRenderer, title, (width - textRenderer.getWidth(title)) / 2, 14, 0xFFFFFFFF, true);
 
 		if (entries.isEmpty()) {
-			Text empty = Text.literal("当前没有可显示的强化数值");
+			Text empty = Text.translatable("gui.magic.selection_empty");
 			context.drawText(textRenderer, empty, (width - textRenderer.getWidth(empty)) / 2, height / 2 - 10, 0xFFB8C1CC, true);
 		} else {
 			renderRows(context);
@@ -130,7 +130,7 @@ public class MagicEnhancementSelectionScreen extends Screen {
 		}
 
 		if (entries.size() > visibleRows) {
-			Text scrollText = Text.literal((scrollOffset + 1) + "-" + end + " / " + entries.size());
+			Text scrollText = Text.translatable("gui.magic.page_range", scrollOffset + 1, end, entries.size());
 			context.drawText(textRenderer, scrollText, right - textRenderer.getWidth(scrollText), TOP - 13, 0xFFB8C1CC, true);
 		}
 	}
@@ -149,7 +149,7 @@ public class MagicEnhancementSelectionScreen extends Screen {
 		int color = enabled ? 0xFF2E7D32 : 0xFF4B5563;
 		context.fill(x, y, x + TOGGLE_WIDTH, y + TOGGLE_HEIGHT, color);
 		context.fill(x + 1, y + 1, x + TOGGLE_WIDTH - 1, y + TOGGLE_HEIGHT - 1, enabled ? 0xFF43A047 : 0xFF6B7280);
-		Text text = Text.literal(enabled ? "开启" : "关闭");
+		Text text = Text.translatable(enabled ? "gui.magic.enabled" : "gui.magic.disabled");
 		context.drawText(textRenderer, text, x + (TOGGLE_WIDTH - textRenderer.getWidth(text)) / 2, y + 4, 0xFFFFFFFF, true);
 	}
 
@@ -338,24 +338,24 @@ public class MagicEnhancementSelectionScreen extends Screen {
 		return separator < 0 ? key : key.substring(0, separator);
 	}
 
-	private static String slotLabel(String key) {
+	private static Text slotLabel(String key) {
 		return switch (key) {
-			case "mainhand" -> "主手武器";
-			case "offhand" -> "副手";
-			case "head" -> "头盔";
-			case "chest" -> "胸甲";
-			case "legs" -> "护腿";
-			case "feet" -> "鞋子";
-			default -> key;
+			case "mainhand" -> Text.translatable("slot.magic.group.mainhand");
+			case "offhand" -> Text.translatable("slot.magic.offhand");
+			case "head" -> Text.translatable("slot.magic.head");
+			case "chest" -> Text.translatable("slot.magic.chest");
+			case "legs" -> Text.translatable("slot.magic.legs");
+			case "feet" -> Text.translatable("slot.magic.feet");
+			default -> Text.literal(key);
 		};
 	}
 
 	private static final class SlotGroup {
 		private final String key;
-		private final String label;
+		private final Text label;
 		private final List<MagicEnhancementHud.DisplayEntry> entries = new ArrayList<>();
 
-		private SlotGroup(String key, String label) {
+		private SlotGroup(String key, Text label) {
 			this.key = key;
 			this.label = label;
 		}

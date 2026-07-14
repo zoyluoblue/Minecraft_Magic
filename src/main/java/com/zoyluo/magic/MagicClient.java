@@ -28,7 +28,7 @@ public class MagicClient implements ClientModInitializer {
 							"tooltip.magic.enhancement",
 							Text.translatable(enhancementType.translationKey()),
 							level.display(),
-							EnhancementSystem.formatDisplayValue(stack, enhancementType)
+							EnhancementSystem.formatDisplayValueText(stack, enhancementType)
 					).formatted(Formatting.GOLD));
 				}
 			}

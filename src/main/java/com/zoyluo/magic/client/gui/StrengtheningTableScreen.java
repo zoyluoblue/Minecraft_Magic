@@ -9,7 +9,6 @@ import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 
@@ -64,8 +63,8 @@ public class StrengtheningTableScreen extends HandledScreen<StrengtheningTableSc
 
 	@Override
 	protected void drawForeground(DrawContext context, int mouseX, int mouseY) {
-		context.drawText(textRenderer, Text.literal("强化台"), titleX, titleY, 0xF2F5F7, false);
-		context.drawText(textRenderer, Text.literal("物品栏"), playerInventoryTitleX, playerInventoryTitleY, 0xB8C1CC, false);
+		context.drawText(textRenderer, title, titleX, titleY, 0xF2F5F7, false);
+		context.drawText(textRenderer, playerInventoryTitle, playerInventoryTitleX, playerInventoryTitleY, 0xB8C1CC, false);
 
 		ItemStack tool = handler.getToolStack();
 		if (!EnhancementSystem.isUpgradeableTool(tool)) {
@@ -82,7 +81,7 @@ public class StrengtheningTableScreen extends HandledScreen<StrengtheningTableSc
 							"gui.magic.enhancement_status",
 							Text.translatable(type.translationKey()),
 							level.display(),
-							EnhancementSystem.formatDisplayValue(tool, type)
+							EnhancementSystem.formatDisplayValueText(tool, type)
 					).formatted(Formatting.GOLD);
 			context.drawText(textRenderer, levelText, 8, lineY, 0xF2F5F7, false);
 			lineY += 10;
@@ -150,18 +149,6 @@ public class StrengtheningTableScreen extends HandledScreen<StrengtheningTableSc
 	}
 
 	private Text getMaterialName(Item material) {
-		if (material == Items.IRON_INGOT) {
-			return Text.literal("铁锭");
-		}
-		if (material == Items.GOLD_INGOT) {
-			return Text.literal("金锭");
-		}
-		if (material == Items.DIAMOND) {
-			return Text.literal("钻石");
-		}
-		if (material == Items.EMERALD) {
-			return Text.literal("绿宝石");
-		}
 		return material.getName();
 	}
 }
