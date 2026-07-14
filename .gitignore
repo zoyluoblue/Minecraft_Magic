@@ -3,6 +3,7 @@ build/
 run/
 logs/
 *.jar
+!gradle/wrapper/gradle-wrapper.jar
 *.class
 *.log
 .DS_Store
