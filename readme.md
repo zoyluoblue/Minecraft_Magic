@@ -8,13 +8,9 @@
 [![Fabric](https://img.shields.io/badge/Fabric_Loader-0.18.4%2B-DBD0B4)](https://fabricmc.net/)
 [![License](https://img.shields.io/github/license/zoyluoblue/Minecraft_Magic)](LICENSE)
 
-**直接答案：** Magic 是一个支持单人世界与多人服务器的 Minecraft 1.21.3 Fabric 装备强化 Mod。玩家可以合成原创星环强化台，为武器、工具和全套护甲叠加 12 种强化，并使用铁锭、金锭、钻石与绿宝石完成从 `I-1` 到 `IV-10` 的长期生存成长。
-
 [下载最新版本](https://github.com/zoyluoblue/Minecraft_Magic/releases/latest) · [三分钟快速开始](#三分钟快速开始) · [查看 12 种强化](#12-种可叠加强化) · [常见问题](#常见问题-faq)
 
 ![Minecraft Magic 装备强化 Mod 宣传图：12 种可叠加强化、四阶 40 级成长与多人服务端权威](./demo/readme/2.1.0/01-minecraft-magic-equipment-enhancement.png)
-
-> 宣传海报用于快速说明玩法；具体模型、界面和数值以当前游戏版本为准。
 
 ## 30 秒了解 Magic
 

@@ -8,13 +8,9 @@ English | [简体中文](readme.md)
 [![Fabric](https://img.shields.io/badge/Fabric_Loader-0.18.4%2B-DBD0B4)](https://fabricmc.net/)
 [![License](https://img.shields.io/github/license/zoyluoblue/Minecraft_Magic)](LICENSE)
 
-**Short answer:** Magic is a Minecraft 1.21.3 Fabric equipment enhancement mod for single-player worlds and multiplayer servers. Craft the original Astral Strengthening Table, stack 12 compatible enhancements across weapons, tools, and all four armor slots, then progress from `I-1` to `IV-10` with iron, gold, diamonds, and emeralds.
-
 [Download the latest release](https://github.com/zoyluoblue/Minecraft_Magic/releases/latest) · [Three-minute quick start](#three-minute-quick-start) · [Explore all 12 enhancements](#12-stackable-enhancements) · [FAQ](#frequently-asked-questions)
 
 ![Minecraft Magic equipment enhancement mod poster showing 12 stackable enhancements, four tiers, 40 levels, and server-authoritative multiplayer](./demo/readme/2.1.0/01-minecraft-magic-equipment-enhancement.png)
-
-> The posters are quick gameplay explainers. The current in-game build is the source of truth for models, UI, and values.
 
 ## Magic in 30 Seconds
 
