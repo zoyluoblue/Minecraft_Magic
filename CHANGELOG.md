@@ -1,5 +1,33 @@
 # Changelog
 
+## 2.1.1 — 2026-07-15
+
+### 简体中文
+
+#### 修复
+
+- 修复强化台进入客户端渲染范围时可能立即闪退的问题。星环与成功能量特效现在按正确的 RenderLayer 缓冲区生命周期顺序绘制。
+
+#### 兼容性
+
+- 不涉及数值、配方、Registry ID、存档结构或网络协议变化，可直接从 `2.1.0` 升级。
+- 多人游戏仍需要客户端与服务端安装相同版本的 Magic。
+
+需要 Minecraft `1.21.3`、Java `21+`、Fabric Loader `0.18.4+` 和 Fabric API `0.114.1+1.21.3`。
+
+### English
+
+#### Fixed
+
+- Fixed an immediate client crash when a Strengthening Table entered render range. Astral rings and success-energy effects now render in the correct RenderLayer buffer lifecycle order.
+
+#### Compatibility
+
+- No balance, recipe, registry ID, save schema, or network protocol changes. Worlds can upgrade directly from `2.1.0`.
+- Multiplayer still requires matching Magic versions on client and server.
+
+Requires Minecraft `1.21.3`, Java `21+`, Fabric Loader `0.18.4+`, and Fabric API `0.114.1+1.21.3`.
+
 ## 2.1.0 — 2026-07-15
 
 ### 简体中文

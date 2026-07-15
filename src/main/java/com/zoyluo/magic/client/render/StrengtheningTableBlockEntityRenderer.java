@@ -89,7 +89,6 @@ public final class StrengtheningTableBlockEntityRenderer implements BlockEntityR
 		float speedMultiplier = 1.0F + ritualPulse * 2.5F;
 
 		VertexConsumer ringVertices = vertexConsumers.getBuffer(RenderLayer.getEntityTranslucentEmissive(RING_TEXTURE));
-		VertexConsumer energyVertices = vertexConsumers.getBuffer(RenderLayer.getEntityTranslucentEmissive(ENERGY_TEXTURE));
 		int red = activeStyle.red();
 		int green = activeStyle.green();
 		int blue = activeStyle.blue();
@@ -104,6 +103,7 @@ public final class StrengtheningTableBlockEntityRenderer implements BlockEntityR
 		renderRingLayer(matrices, ringVertices, 0.39F, 0.019F, ticks * 0.22F * speedMultiplier - positionPhase * 0.35F, 70.0F, red, green, blue, Math.max(40, baseAlpha - 46), overlay);
 
 		if (successActive) {
+			VertexConsumer energyVertices = vertexConsumers.getBuffer(RenderLayer.getEntityTranslucentEmissive(ENERGY_TEXTURE));
 			renderSuccessMotes(
 					matrices,
 					energyVertices,
