@@ -25,6 +25,7 @@ public final class ModBlocks {
 			STRENGTHENING_TABLE_ID,
 			new StrengtheningTableBlock(AbstractBlock.Settings.copy(Blocks.SMITHING_TABLE)
 					.registryKey(BLOCK_KEY)
+					.nonOpaque()
 					.mapColor(MapColor.DEEPSLATE_GRAY)
 					.sounds(BlockSoundGroup.METAL)
 					.strength(4.0F, 8.0F))

@@ -12,6 +12,198 @@ base {
 	archivesName = project.archives_base_name
 }
 
+sourceSets {
+	gametest {
+		compileClasspath += sourceSets.main.output + sourceSets.main.compileClasspath
+		runtimeClasspath += sourceSets.main.output + sourceSets.main.runtimeClasspath
+	}
+}
+
+loom {
+	mods {
+		"magic" {
+			sourceSet sourceSets.main
+		}
+		"magic-gametest" {
+			sourceSet sourceSets.gametest
+		}
+	}
+	runs {
+		gameTest {
+			server()
+			source sourceSets.gametest
+			runDir "build/run/gameTest"
+			vmArg "-Dfabric-api.gametest"
+			property "fabric-api.gametest.report-file",
+					file("build/test-results/gametest/TEST-magic-gametest.xml").absolutePath
+		}
+	}
+}
+
+def prepareGameTestRun = tasks.register("prepareGameTestRun") {
+	group = "verification"
+	description = "Creates a clean, deterministic Magic GameTest run directory."
+	outputs.upToDateWhen { false }
+
+	doLast {
+		def runDir = file("build/run/gameTest")
+		delete runDir
+		runDir.mkdirs()
+		new File(runDir, "eula.txt").setText("eula=true\n", "UTF-8")
+		new File(runDir, "server.properties").setText(
+				"online-mode=false\nlevel-name=world\nlevel-seed=0\n", "UTF-8")
+	}
+}
+
+tasks.named("runGameTest") {
+	dependsOn prepareGameTestRun
+}
+
+tasks.named("check") {
+	dependsOn tasks.named("gametestClasses")
+}
+
+def strengtheningTableVisualFiles = [
+		file("src/main/resources/assets/magic/blockstates/strengthening_table.json"),
+		file("src/main/resources/assets/magic/models/block/strengthening_table.json"),
+		file("src/main/resources/assets/magic/models/item/strengthening_table.json"),
+		file("src/main/resources/assets/magic/textures/block/strengthening_table_base.png"),
+		file("src/main/resources/assets/magic/textures/block/strengthening_table_trim.png"),
+		file("src/main/resources/assets/magic/textures/block/strengthening_table_runes.png"),
+		file("src/main/resources/assets/magic/textures/block/strengthening_table_crystal.png"),
+		file("src/main/resources/assets/magic/textures/entity/strengthening_table_ring.png"),
+		file("src/main/resources/assets/magic/textures/entity/strengthening_table_energy.png")
+]
+
+def verifyMagicVisualResources = tasks.register("verifyMagicVisualResources") {
+	group = "verification"
+	description = "Validates Magic's original Strengthening Table models, textures, and release-JAR isolation."
+	dependsOn tasks.named("remapJar")
+	inputs.files(strengtheningTableVisualFiles)
+	inputs.files(fileTree("src/gametest/java") { include "**/*.java" })
+
+	doLast {
+		def missingFiles = strengtheningTableVisualFiles.findAll { !it.isFile() }
+		if (!missingFiles.isEmpty()) {
+			throw new GradleException("Missing Strengthening Table visual resources: ${missingFiles*.path}")
+		}
+
+		def json = new groovy.json.JsonSlurper()
+		def blockstateFile = strengtheningTableVisualFiles[0]
+		def blockModelFile = strengtheningTableVisualFiles[1]
+		def itemModelFile = strengtheningTableVisualFiles[2]
+		def blockstate = json.parse(blockstateFile) as Map
+		def blockModel = json.parse(blockModelFile) as Map
+		def itemModel = json.parse(itemModelFile) as Map
+
+		def expectedVariants = [
+				"facing=north",
+				"facing=east",
+				"facing=south",
+				"facing=west"
+		] as Set
+		if (!(blockstate.variants instanceof Map) || blockstate.variants.keySet() as Set != expectedVariants) {
+			throw new GradleException("${blockstateFile}: expected exactly four horizontal facing variants")
+		}
+		blockstate.variants.each { variantKey, variant ->
+			if (!(variant instanceof Map) || variant.model != "magic:block/strengthening_table") {
+				throw new GradleException("${blockstateFile}: ${variantKey} must use magic:block/strengthening_table")
+			}
+		}
+
+		if (!(blockModel.elements instanceof List) || blockModel.elements.isEmpty()) {
+			throw new GradleException("${blockModelFile}: original block geometry is required")
+		}
+		if (!(blockModel.textures instanceof Map) || blockModel.textures.isEmpty()) {
+			throw new GradleException("${blockModelFile}: original texture bindings are required")
+		}
+		blockModel.textures.each { textureKey, textureValue ->
+			if (!(textureValue instanceof String)) {
+				throw new GradleException("${blockModelFile}: texture ${textureKey} must be a string")
+			}
+			if (textureValue.startsWith("minecraft:")) {
+				throw new GradleException("${blockModelFile}: vanilla texture reference is forbidden: ${textureValue}")
+			}
+			if (textureValue.startsWith("#")) {
+				return
+			}
+			if (!textureValue.startsWith("magic:")) {
+				throw new GradleException("${blockModelFile}: texture must use the magic namespace: ${textureValue}")
+			}
+			def texturePath = textureValue.substring("magic:".length())
+			def textureFile = file("src/main/resources/assets/magic/textures/${texturePath}.png")
+			if (!textureFile.isFile()) {
+				throw new GradleException("${blockModelFile}: missing referenced texture ${textureFile}")
+			}
+		}
+
+		if (itemModel.parent != "magic:block/strengthening_table") {
+			throw new GradleException("${itemModelFile}: item model must use the static Magic block model")
+		}
+
+		strengtheningTableVisualFiles.findAll { it.name.endsWith(".png") }.each { textureFile ->
+			def image = javax.imageio.ImageIO.read(textureFile)
+			if (image == null || image.width <= 0 || image.height <= 0) {
+				throw new GradleException("${textureFile}: invalid or unreadable PNG")
+			}
+		}
+
+		def releaseJar = tasks.named("remapJar").get().archiveFile.get().asFile
+		if (!releaseJar.isFile()) {
+			throw new GradleException("Remapped release JAR was not produced: ${releaseJar}")
+		}
+		new java.util.zip.ZipFile(releaseJar).withCloseable { zip ->
+			def entries = java.util.Collections.list(zip.entries())*.name
+			def requiredJarEntries = strengtheningTableVisualFiles.collect { resourceFile ->
+				def normalized = projectDir.toPath().relativize(resourceFile.toPath()).toString().replace('\\', '/')
+				return normalized.substring("src/main/resources/".length())
+			}
+			def missingJarEntries = requiredJarEntries.findAll { !entries.contains(it) }
+			if (!missingJarEntries.isEmpty()) {
+				throw new GradleException("Release JAR is missing visual resources: ${missingJarEntries}")
+			}
+
+			def testClassNames = fileTree("src/gametest/java") {
+				include "**/*.java"
+			}.files.collect { sourceFile ->
+				sourceFile.name.substring(0, sourceFile.name.length() - ".java".length())
+			} as Set
+			def leakedTestClasses = entries.findAll { entryName ->
+				if (!entryName.endsWith(".class")) {
+					return false
+				}
+				def classFileName = entryName.tokenize('/').last()
+				return testClassNames.any { testClassName ->
+					classFileName == "${testClassName}.class" || classFileName.startsWith("${testClassName}\$")
+				}
+			}
+			if (!leakedTestClasses.isEmpty()) {
+				throw new GradleException("GameTest classes leaked into the release JAR: ${leakedTestClasses}")
+			}
+
+			def modMetadataEntry = zip.getEntry("fabric.mod.json")
+			if (modMetadataEntry == null) {
+				throw new GradleException("Release JAR does not contain fabric.mod.json")
+			}
+			def modMetadata
+			zip.getInputStream(modMetadataEntry).withCloseable { input ->
+				modMetadata = json.parse(input) as Map
+			}
+			if (modMetadata.id != "magic") {
+				throw new GradleException("Release JAR contains test or unexpected mod metadata: ${modMetadata.id}")
+			}
+		}
+	}
+}
+
+tasks.named("check") {
+	dependsOn verifyMagicVisualResources
+}
+
+tasks.named("build") {
+	dependsOn verifyMagicVisualResources
+}
+
 repositories {
 	maven {
 		name = "Fabric"

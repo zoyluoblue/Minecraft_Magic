@@ -52,5 +52,7 @@
 	"ore.magic.obsidian": "Obsidian",
 	"ore.magic.emerald": "Emerald",
 	"message.magic.triggered": "%s triggered! Chance: %s",
+	"message.magic.nail_gun.protocol_mismatch": "Nail Gun is unavailable because the client and server protocol versions do not match.",
+	"message.magic.nail_gun.protocol_upgrade": "Nail Gun requires the matching Magic client version.",
 	"tooltip.magic.enhancement": "%s enhancement: %s (Value %s)"
 }

@@ -137,6 +137,44 @@ public final class EnhancementSystem {
 		return Level.EMPTY;
 	}
 
+	/**
+	 * Returns the highest stored enhancement that is actually applicable to this stack.
+	 * The custom data component is copied once so client renderers can query the visual
+	 * tier without repeating the NBT copy for every enhancement type.
+	 */
+	public static Level getHighestApplicableLevel(ItemStack stack) {
+		if (stack.isEmpty()) {
+			return Level.EMPTY;
+		}
+
+		NbtComponent component = stack.get(DataComponentTypes.CUSTOM_DATA);
+		if (component == null) {
+			return Level.EMPTY;
+		}
+
+		NbtCompound nbt = component.copyNbt();
+		NbtCompound enhancements = nbt.contains(ROOT_KEY, 10) ? nbt.getCompound(ROOT_KEY) : null;
+		Level highest = Level.EMPTY;
+		for (EnhancementType type : EnhancementType.values()) {
+			if (!isApplicable(stack, type)) {
+				continue;
+			}
+
+			Level candidate = Level.EMPTY;
+			boolean hasCurrentValue = enhancements != null && enhancements.contains(type.id(), 10);
+			if (hasCurrentValue) {
+				candidate = readLevel(enhancements.getCompound(type.id()));
+			} else if (type == EnhancementType.CRIT) {
+				candidate = readLegacyCritLevel(nbt);
+			}
+
+			if (candidate.totalLevels() > highest.totalLevels()) {
+				highest = candidate;
+			}
+		}
+		return highest;
+	}
+
 	public static void setLevel(ItemStack stack, EnhancementType type, Level level) {
 		NbtComponent component = stack.get(DataComponentTypes.CUSTOM_DATA);
 		NbtCompound nbt = component == null ? new NbtCompound() : component.copyNbt();

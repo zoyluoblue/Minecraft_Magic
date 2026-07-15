@@ -2,7 +2,7 @@
 
 ## 开始前
 
-依次阅读 `readme.md`、`README.en.md`、`docs/ARCHITECTURE.md`、`fabric.mod.json`、`magic.mixins.json` 和目标源码。位于 `mc_mods` 工作区时，同时遵循上级 `../AGENTS.md` 与 `../docs/mod-development/`。
+依次阅读 `readme.md`、`README.en.md`、`fabric.mod.json`、`magic.mixins.json` 和目标源码。位于 `mc_mods` 工作区时，同时遵循上级 `../AGENTS.md`。
 
 ## 不变量
 
@@ -26,4 +26,4 @@
 ./gradlew clean build --no-daemon --stacktrace
 ~~~
 
-同时执行 `docs/ARCHITECTURE.md` 的强化台、战斗、护甲、HUD、探矿、射钉枪、存档兼容和 Dedicated Server 回归。
+同时完成强化台、战斗、护甲、HUD、探矿、射钉枪、存档兼容和 Dedicated Server 回归。

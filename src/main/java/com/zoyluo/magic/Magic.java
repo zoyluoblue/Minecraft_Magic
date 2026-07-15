@@ -5,6 +5,7 @@ import com.zoyluo.magic.block.StrengtheningTableBlockEntity;
 import com.zoyluo.magic.component.EnhancementEffects;
 import com.zoyluo.magic.component.HelmetEnhancementEffects;
 import com.zoyluo.magic.component.NailGunEffects;
+import com.zoyluo.magic.component.SoulChargeService;
 import com.zoyluo.magic.network.MagicNetworking;
 import com.zoyluo.magic.registry.ModBlockEntities;
 import com.zoyluo.magic.registry.ModBlocks;
@@ -34,6 +35,7 @@ public class Magic implements ModInitializer {
 		ModScreenHandlers.initialize();
 		ItemGroupEvents.modifyEntriesEvent(ItemGroups.FUNCTIONAL).register(entries -> entries.add(STRENGTHENING_TABLE_ITEM));
 		MagicNetworking.registerPayloadTypes();
+		SoulChargeService.register();
 		EnhancementEffects.register();
 		HelmetEnhancementEffects.register();
 		NailGunEffects.register();

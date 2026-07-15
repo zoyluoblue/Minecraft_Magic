@@ -3,11 +3,15 @@
 	"id": "magic",
 	"version": "${version}",
 	"name": "Magic",
-	"description": "Adds a strengthening table with weapon, tool, and boot enhancements.",
+	"description": "Adds an original Strengthening Table, 12 stackable weapon, tool, and armor enhancements, four-tier gear progression, and multiplayer-safe systems.",
 	"authors": [
 		"zoyluo"
 	],
-	"contact": {},
+	"contact": {
+		"homepage": "https://github.com/zoyluoblue/Minecraft_Magic",
+		"sources": "https://github.com/zoyluoblue/Minecraft_Magic",
+		"issues": "https://github.com/zoyluoblue/Minecraft_Magic/issues"
+	},
 	"license": "MIT",
 	"environment": "*",
 	"entrypoints": {

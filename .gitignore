@@ -8,3 +8,6 @@ logs/
 *.log
 .DS_Store
 **/.DS_Store
+/docs/
+/FEATURE_DESIGN.md
+/assets/

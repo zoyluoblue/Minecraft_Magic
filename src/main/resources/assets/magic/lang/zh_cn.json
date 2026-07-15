@@ -52,5 +52,7 @@
 	"ore.magic.obsidian": "黑曜石",
 	"ore.magic.emerald": "绿宝石",
 	"message.magic.triggered": "%s触发！概率 %s",
+	"message.magic.nail_gun.protocol_mismatch": "客户端与服务端的射钉枪协议版本不一致，当前无法使用。",
+	"message.magic.nail_gun.protocol_upgrade": "射钉枪需要使用与服务端匹配的 Magic 客户端版本。",
 	"tooltip.magic.enhancement": "%s强化：%s（数值 %s）"
 }

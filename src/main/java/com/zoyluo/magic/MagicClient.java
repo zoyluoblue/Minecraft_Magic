@@ -3,7 +3,9 @@ package com.zoyluo.magic;
 import com.zoyluo.magic.client.gui.MagicEnhancementHud;
 import com.zoyluo.magic.client.gui.HelmetOreLocator;
 import com.zoyluo.magic.client.gui.StrengtheningTableScreen;
+import com.zoyluo.magic.client.render.StrengtheningTableBlockEntityRenderer;
 import com.zoyluo.magic.client.NailGunClient;
+import com.zoyluo.magic.client.ClientSoulChargeCache;
 import com.zoyluo.magic.component.EnhancementSystem;
 import com.zoyluo.magic.component.EnhancementType;
 import net.fabricmc.api.ClientModInitializer;
@@ -16,8 +18,10 @@ public class MagicClient implements ClientModInitializer {
 	@Override
 	public void onInitializeClient() {
 		HandledScreens.register(Magic.STRENGTHENING_TABLE_SCREEN_HANDLER, StrengtheningTableScreen::new);
+		StrengtheningTableBlockEntityRenderer.register();
 		MagicEnhancementHud.register();
 		HelmetOreLocator.register();
+		ClientSoulChargeCache.register();
 		NailGunClient.register();
 
 		ItemTooltipCallback.EVENT.register((stack, context, type, lines) -> {

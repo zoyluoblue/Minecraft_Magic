@@ -1,6 +1,7 @@
 package com.zoyluo.magic.screen;
 
 import com.zoyluo.magic.Magic;
+import com.zoyluo.magic.block.StrengtheningTableBlockEntity;
 import com.zoyluo.magic.component.EnhancementSystem;
 import com.zoyluo.magic.component.EnhancementType;
 import net.minecraft.entity.player.PlayerEntity;
@@ -13,6 +14,9 @@ import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.ScreenHandlerContext;
 import net.minecraft.screen.slot.Slot;
 import net.minecraft.util.math.BlockPos;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class StrengtheningTableScreenHandler extends ScreenHandler {
 	private static final int INPUT_SLOT = 0;
@@ -87,11 +91,16 @@ public class StrengtheningTableScreenHandler extends ScreenHandler {
 			return false;
 		}
 
-		if (!player.isCreative()) {
-			consumeMaterial(requirement);
+		if (!player.isCreative() && !consumeMaterial(requirement)) {
+			return false;
 		}
 		EnhancementSystem.setLevel(getToolStack(), type, requirement.nextLevel());
 		inventory.markDirty();
+		context.run((world, pos) -> {
+			if (world.getBlockEntity(pos) instanceof StrengtheningTableBlockEntity table) {
+				table.triggerUpgradeAnimation(requirement.nextLevel().totalLevels());
+			}
+		});
 		sendContentUpdates();
 		return true;
 	}
@@ -174,20 +183,33 @@ public class StrengtheningTableScreenHandler extends ScreenHandler {
 		return count;
 	}
 
-	private void consumeMaterial(EnhancementSystem.UpgradeRequirement requirement) {
+	private boolean consumeMaterial(EnhancementSystem.UpgradeRequirement requirement) {
+		List<StackDeduction> deductions = new ArrayList<>();
 		int remaining = requirement.count();
-		remaining = decrementStack(getMaterialStack(), remaining);
+		remaining = planDeduction(getMaterialStack(), requirement.material(), remaining, deductions);
 		for (int i = 0; i < playerInventory.size() && remaining > 0; i++) {
-			remaining = decrementStack(playerInventory.getStack(i), remaining);
+			remaining = planDeduction(playerInventory.getStack(i), requirement.material(), remaining, deductions);
 		}
+		if (remaining > 0) {
+			return false;
+		}
+
+		for (StackDeduction deduction : deductions) {
+			deduction.stack().decrement(deduction.count());
+		}
+		playerInventory.markDirty();
+		return true;
 	}
 
-	private int decrementStack(ItemStack stack, int amount) {
-		if (stack.isEmpty() || amount <= 0) {
+	private int planDeduction(ItemStack stack, Item material, int amount, List<StackDeduction> deductions) {
+		if (amount <= 0 || !stack.isOf(material)) {
 			return amount;
 		}
 		int removed = Math.min(stack.getCount(), amount);
-		stack.decrement(removed);
+		deductions.add(new StackDeduction(stack, removed));
 		return amount - removed;
+	}
+
+	private record StackDeduction(ItemStack stack, int count) {
 	}
 }

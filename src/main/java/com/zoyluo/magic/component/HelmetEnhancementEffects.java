@@ -31,7 +31,9 @@ public final class HelmetEnhancementEffects {
 	}
 
 	public static void register() {
-		ServerPlayConnectionEvents.DISCONNECT.register((handler, server) -> clearPlayerLight(server, handler.player.getUuid()));
+		ServerPlayConnectionEvents.DISCONNECT.register((handler, server) ->
+				ServerThreadTasks.execute(server, () -> clearPlayerLight(server, handler.player.getUuid()))
+		);
 		ServerLifecycleEvents.SERVER_STOPPING.register(HelmetEnhancementEffects::clearAllLights);
 	}
 

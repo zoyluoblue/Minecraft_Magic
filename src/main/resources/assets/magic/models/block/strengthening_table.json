@@ -1,12 +1,206 @@
 {
-	"parent": "minecraft:block/cube",
+	"ambientocclusion": true,
+	"gui_light": "side",
 	"textures": {
-		"down": "minecraft:block/deepslate_tiles",
-		"up": "minecraft:block/smithing_table_top",
-		"north": "minecraft:block/lodestone_side",
-		"south": "minecraft:block/smithing_table_front",
-		"east": "minecraft:block/smithing_table_side",
-		"west": "minecraft:block/smithing_table_side",
-		"particle": "minecraft:block/smithing_table_top"
-	}
+		"base": "magic:block/strengthening_table_base",
+		"trim": "magic:block/strengthening_table_trim",
+		"runes": "magic:block/strengthening_table_runes",
+		"crystal": "magic:block/strengthening_table_crystal",
+		"particle": "magic:block/strengthening_table_base"
+	},
+	"display": {
+		"gui": {
+			"rotation": [30, 225, 0],
+			"translation": [0, 0, 0],
+			"scale": [0.625, 0.625, 0.625]
+		},
+		"ground": {
+			"rotation": [0, 0, 0],
+			"translation": [0, 3, 0],
+			"scale": [0.25, 0.25, 0.25]
+		},
+		"fixed": {
+			"rotation": [0, 0, 0],
+			"translation": [0, 0, 0],
+			"scale": [0.5, 0.5, 0.5]
+		},
+		"thirdperson_righthand": {
+			"rotation": [75, 45, 0],
+			"translation": [0, 2.5, 0],
+			"scale": [0.375, 0.375, 0.375]
+		},
+		"thirdperson_lefthand": {
+			"rotation": [75, 225, 0],
+			"translation": [0, 2.5, 0],
+			"scale": [0.375, 0.375, 0.375]
+		},
+		"firstperson_righthand": {
+			"rotation": [0, 45, 0],
+			"translation": [0, 0, 0],
+			"scale": [0.4, 0.4, 0.4]
+		},
+		"firstperson_lefthand": {
+			"rotation": [0, 225, 0],
+			"translation": [0, 0, 0],
+			"scale": [0.4, 0.4, 0.4]
+		}
+	},
+	"elements": [
+		{
+			"from": [1, 0, 1],
+			"to": [15, 2, 15],
+			"faces": {
+				"down": { "texture": "#base", "cullface": "down" },
+				"up": { "texture": "#trim" },
+				"north": { "texture": "#trim" },
+				"south": { "texture": "#trim" },
+				"west": { "texture": "#trim" },
+				"east": { "texture": "#trim" }
+			}
+		},
+		{
+			"from": [2, 2, 2],
+			"to": [14, 6, 14],
+			"faces": {
+				"down": { "texture": "#base" },
+				"up": { "texture": "#base" },
+				"north": { "texture": "#base" },
+				"south": { "texture": "#base" },
+				"west": { "texture": "#base" },
+				"east": { "texture": "#base" }
+			}
+		},
+		{
+			"from": [3, 6, 3],
+			"to": [13, 9, 13],
+			"faces": {
+				"down": { "texture": "#base" },
+				"up": { "texture": "#trim" },
+				"north": { "texture": "#runes" },
+				"south": { "texture": "#runes" },
+				"west": { "texture": "#runes" },
+				"east": { "texture": "#runes" }
+			}
+		},
+		{
+			"from": [2, 9, 2],
+			"to": [14, 11, 14],
+			"faces": {
+				"down": { "texture": "#trim" },
+				"up": { "texture": "#runes" },
+				"north": { "texture": "#trim" },
+				"south": { "texture": "#trim" },
+				"west": { "texture": "#trim" },
+				"east": { "texture": "#trim" }
+			}
+		},
+		{
+			"from": [4, 11, 4],
+			"to": [12, 12, 12],
+			"faces": {
+				"down": { "texture": "#trim" },
+				"up": { "texture": "#runes" },
+				"north": { "texture": "#trim" },
+				"south": { "texture": "#trim" },
+				"west": { "texture": "#trim" },
+				"east": { "texture": "#trim" }
+			}
+		},
+		{
+			"from": [2, 10, 2],
+			"to": [4, 15, 4],
+			"rotation": { "origin": [3, 12, 3], "axis": "y", "angle": 45, "rescale": true },
+			"faces": {
+				"down": { "texture": "#trim" },
+				"up": { "texture": "#crystal" },
+				"north": { "texture": "#crystal" },
+				"south": { "texture": "#crystal" },
+				"west": { "texture": "#crystal" },
+				"east": { "texture": "#crystal" }
+			}
+		},
+		{
+			"from": [12, 10, 2],
+			"to": [14, 15, 4],
+			"rotation": { "origin": [13, 12, 3], "axis": "y", "angle": 45, "rescale": true },
+			"faces": {
+				"down": { "texture": "#trim" },
+				"up": { "texture": "#crystal" },
+				"north": { "texture": "#crystal" },
+				"south": { "texture": "#crystal" },
+				"west": { "texture": "#crystal" },
+				"east": { "texture": "#crystal" }
+			}
+		},
+		{
+			"from": [2, 10, 12],
+			"to": [4, 15, 14],
+			"rotation": { "origin": [3, 12, 13], "axis": "y", "angle": 45, "rescale": true },
+			"faces": {
+				"down": { "texture": "#trim" },
+				"up": { "texture": "#crystal" },
+				"north": { "texture": "#crystal" },
+				"south": { "texture": "#crystal" },
+				"west": { "texture": "#crystal" },
+				"east": { "texture": "#crystal" }
+			}
+		},
+		{
+			"from": [12, 10, 12],
+			"to": [14, 15, 14],
+			"rotation": { "origin": [13, 12, 13], "axis": "y", "angle": 45, "rescale": true },
+			"faces": {
+				"down": { "texture": "#trim" },
+				"up": { "texture": "#crystal" },
+				"north": { "texture": "#crystal" },
+				"south": { "texture": "#crystal" },
+				"west": { "texture": "#crystal" },
+				"east": { "texture": "#crystal" }
+			}
+		},
+		{
+			"from": [7, 2, 0.5],
+			"to": [9, 8, 2],
+			"faces": {
+				"up": { "texture": "#trim" },
+				"north": { "texture": "#runes" },
+				"south": { "texture": "#trim" },
+				"west": { "texture": "#trim" },
+				"east": { "texture": "#trim" }
+			}
+		},
+		{
+			"from": [7, 2, 14],
+			"to": [9, 8, 15.5],
+			"faces": {
+				"up": { "texture": "#trim" },
+				"north": { "texture": "#trim" },
+				"south": { "texture": "#runes" },
+				"west": { "texture": "#trim" },
+				"east": { "texture": "#trim" }
+			}
+		},
+		{
+			"from": [0.5, 2, 7],
+			"to": [2, 8, 9],
+			"faces": {
+				"up": { "texture": "#trim" },
+				"north": { "texture": "#trim" },
+				"south": { "texture": "#trim" },
+				"west": { "texture": "#runes" },
+				"east": { "texture": "#trim" }
+			}
+		},
+		{
+			"from": [14, 2, 7],
+			"to": [15.5, 8, 9],
+			"faces": {
+				"up": { "texture": "#trim" },
+				"north": { "texture": "#trim" },
+				"south": { "texture": "#trim" },
+				"west": { "texture": "#trim" },
+				"east": { "texture": "#runes" }
+			}
+		}
+	]
 }

@@ -1,0 +1,26 @@
+{
+	"schemaVersion": 1,
+	"id": "magic-gametest",
+	"version": "1.0.0",
+	"name": "Magic GameTests",
+	"description": "Deterministic GameTests for Magic gameplay safety invariants.",
+	"environment": "server",
+	"entrypoints": {
+		"main": [
+			"com.zoyluo.magic.gametest.MagicGameTestMod"
+		],
+		"fabric-gametest": [
+			"com.zoyluo.magic.gametest.MagicGameplayGameTests",
+			"com.zoyluo.magic.component.Phase1DataAndNailGameTests",
+			"com.zoyluo.magic.gametest.Phase1CombatGameTests",
+			"com.zoyluo.magic.gametest.Phase3AVisualRuleGameTests",
+			"com.zoyluo.magic.gametest.Phase3ATableGameTests"
+		]
+	},
+	"depends": {
+		"fabricloader": ">=0.18.4",
+		"minecraft": "1.21.3",
+		"fabric-api": "*",
+		"magic": "*"
+	}
+}

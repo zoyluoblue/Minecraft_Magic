@@ -5,7 +5,12 @@
 	"mixins": [
 		"EntityMixin",
 		"LivingEntityMixin",
-		"PlayerEntityMixin"
+		"PersistentProjectileEntityMixin",
+		"PlayerEntityMixin",
+		"PlayerInventoryMixin",
+		"PlayerManagerMixin",
+		"PlayerScreenHandlerMixin",
+		"TridentEntityMixin"
 	],
 	"injectors": {
 		"defaultRequire": 1

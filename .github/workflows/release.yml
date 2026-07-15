@@ -24,6 +24,8 @@ jobs:
         run: chmod +x gradlew
       - name: Build release artifacts
         run: ./gradlew build --no-daemon --stacktrace
+      - name: Run GameTests
+        run: ./gradlew runGameTest --no-daemon --stacktrace
       - name: Create GitHub Release
         env:
           GH_TOKEN: ${{ github.token }}
