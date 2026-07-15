@@ -3,6 +3,7 @@ package com.zoyluo.magic.client.render;
 import com.zoyluo.magic.Magic;
 import com.zoyluo.magic.block.StrengtheningTableBlock;
 import com.zoyluo.magic.block.StrengtheningTableBlockEntity;
+import com.zoyluo.magic.component.EnhancementGlowProfile;
 import com.zoyluo.magic.component.EnhancementSystem;
 import net.minecraft.client.render.LightmapTextureManager;
 import net.minecraft.client.render.OverlayTexture;
@@ -364,14 +365,10 @@ public final class StrengtheningTableBlockEntityRenderer implements BlockEntityR
 		int safeLevel = Math.min(StrengtheningTableBlockEntity.MAX_TOTAL_LEVEL, totalLevel);
 		int major = (safeLevel - 1) / EnhancementSystem.MAX_MINOR + 1;
 		int minor = (safeLevel - 1) % EnhancementSystem.MAX_MINOR + 1;
-		int rgb = switch (major) {
-			case 1 -> 0x4EA8FF;
-			case 2 -> 0xA970FF;
-			case 3 -> 0xFF70C8;
-			case 4 -> 0xFF9A45;
-			default -> 0xA8E9FF;
-		};
-		return new VisualStyle(rgb, 0.48F + (minor - 1) * 0.052F);
+		EnhancementGlowProfile profile = EnhancementGlowProfile.forLevel(
+				new EnhancementSystem.Level(major, minor)
+		);
+		return new VisualStyle(profile.rgb(), 0.48F + (minor - 1) * 0.052F);
 	}
 
 	private static VisualStyle blend(VisualStyle from, VisualStyle to, float amount) {

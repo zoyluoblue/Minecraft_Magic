@@ -27,6 +27,7 @@ public final class EnhancementSystem {
 	private static final String MINOR_KEY = "Minor";
 	private static final String LEGACY_CRIT_MAJOR_KEY = "MagicCritMajor";
 	private static final String LEGACY_CRIT_MINOR_KEY = "MagicCritMinor";
+	private static final EnhancementType[] ENHANCEMENT_TYPES = EnhancementType.values();
 	public static final int MAX_MAJOR = 4;
 	public static final int MAX_MINOR = 10;
 
@@ -75,7 +76,7 @@ public final class EnhancementSystem {
 
 	public static List<EnhancementType> getApplicableTypes(ItemStack stack) {
 		List<EnhancementType> types = new ArrayList<>();
-		for (EnhancementType type : EnhancementType.values()) {
+		for (EnhancementType type : ENHANCEMENT_TYPES) {
 			if (isApplicable(stack, type)) {
 				types.add(type);
 			}
@@ -155,7 +156,7 @@ public final class EnhancementSystem {
 		NbtCompound nbt = component.copyNbt();
 		NbtCompound enhancements = nbt.contains(ROOT_KEY, 10) ? nbt.getCompound(ROOT_KEY) : null;
 		Level highest = Level.EMPTY;
-		for (EnhancementType type : EnhancementType.values()) {
+		for (EnhancementType type : ENHANCEMENT_TYPES) {
 			if (!isApplicable(stack, type)) {
 				continue;
 			}

@@ -1,5 +1,39 @@
 # Changelog
 
+## 2.2.0 — 2026-07-15
+
+### 简体中文
+
+#### 新功能
+
+- 强化物品按最高适用强化显示独立轮廓光：I 蓝、II 紫、III 粉、IV 橙，同阶 1–10 级逐步增加轮廓宽度与强度。
+- 轮廓只覆盖物品剪影外侧，不修改原贴图、本体颜色、明暗或原版附魔 glint，也不会照亮周围环境。
+- 背包、热栏和第一人称手持已完成实机验证；第三人称、掉落物和展示框使用同一物品渲染路径，仍在兼容验收。
+
+#### 质量与兼容性
+
+- 新增 Alpha-only 轮廓 Shader、发布资源门禁和四阶十级视觉规则回归，Dedicated Server GameTest 增至 35 项。
+- 不涉及数值、配方、Registry ID、存档结构或网络协议变化，可直接从 `2.1.1` 升级。
+- 穿戴中的盔甲暂不显示轮廓；多人游戏仍需要客户端与服务端安装相同版本的 Magic。
+
+需要 Minecraft `1.21.3`、Java `21+`、Fabric Loader `0.18.4+` 和 Fabric API `0.114.1+1.21.3`。
+
+### English
+
+#### New
+
+- Enhanced items now receive a separate silhouette halo based on the strongest applicable enhancement: Tier I blue, Tier II purple, Tier III pink, and Tier IV orange. Width and intensity increase from level 1 to 10 within each tier.
+- The halo covers only the outside of the item silhouette. It does not alter the original texture, item color, lighting, or vanilla enchantment glint, and it does not illuminate the environment.
+- Inventories, hotbars, and first-person hands have been verified in a real client. Third-person hands, dropped items, and item frames use the same item-rendering path and remain under compatibility validation.
+
+#### Quality and compatibility
+
+- Added an alpha-only outline shader, release resource gates, four-tier visual regression coverage, and a 35-test Dedicated Server suite.
+- No balance, recipe, registry ID, save schema, or network protocol changes. Worlds can upgrade directly from `2.1.1`.
+- Worn armor does not yet receive the outline. Multiplayer still requires matching Magic versions on client and server.
+
+Requires Minecraft `1.21.3`, Java `21+`, Fabric Loader `0.18.4+`, and Fabric API `0.114.1+1.21.3`.
+
 ## 2.1.1 — 2026-07-15
 
 ### 简体中文

@@ -12,6 +12,11 @@
 		"PlayerScreenHandlerMixin",
 		"TridentEntityMixin"
 	],
+	"client": [
+		"client.ItemRendererMixin",
+		"client.RenderLayerMultiPhaseAccessor",
+		"client.RenderLayerMultiPhaseParametersAccessor"
+	],
 	"injectors": {
 		"defaultRequire": 1
 	}

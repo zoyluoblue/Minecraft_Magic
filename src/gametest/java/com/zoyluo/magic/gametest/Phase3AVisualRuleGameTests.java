@@ -1,5 +1,6 @@
 package com.zoyluo.magic.gametest;
 
+import com.zoyluo.magic.component.EnhancementGlowProfile;
 import com.zoyluo.magic.component.EnhancementSystem;
 import com.zoyluo.magic.component.EnhancementType;
 import net.fabricmc.fabric.api.gametest.v1.FabricGameTest;
@@ -76,6 +77,32 @@ public final class Phase3AVisualRuleGameTests implements FabricGameTest {
 				previousTotal = resolved.totalLevels();
 			}
 		}
+		context.complete();
+	}
+
+	@GameTest(templateName = FabricGameTest.EMPTY_STRUCTURE, tickLimit = 20)
+	public void glowProfilesPreserveTierColorsAndIncreaseWithinEveryTier(TestContext context) {
+		int[] expectedColors = {0x4EA8FF, 0xA970FF, 0xFF70C8, 0xFF9A45};
+		for (int major = 1; major <= EnhancementSystem.MAX_MAJOR; major++) {
+			EnhancementGlowProfile previous = EnhancementGlowProfile.NONE;
+			for (int minor = 1; minor <= EnhancementSystem.MAX_MINOR; minor++) {
+				EnhancementGlowProfile profile = EnhancementGlowProfile.forLevel(
+						new EnhancementSystem.Level(major, minor)
+				);
+				require(context, profile.rgb() == expectedColors[major - 1], "wrong tier glow color");
+				require(context, profile.outlineOpacity() > previous.outlineOpacity(), "outline opacity did not increase");
+				require(context, profile.outlineWidth() > previous.outlineWidth(), "outline width did not increase");
+				require(context, profile.outlineOpacity() >= 0.62F && profile.outlineOpacity() <= 0.94F, "outline opacity out of bounds");
+				require(context, profile.outlineWidth() >= 0.35F && profile.outlineWidth() <= 1.0F, "outline width out of bounds");
+				previous = profile;
+			}
+		}
+
+		require(
+				context,
+				EnhancementGlowProfile.forLevel(EnhancementSystem.Level.EMPTY).equals(EnhancementGlowProfile.NONE),
+				"empty enhancement unexpectedly produced a glow profile"
+		);
 		context.complete();
 	}
 

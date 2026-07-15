@@ -144,7 +144,7 @@ The placed table uses an original pedestal, original textures, and three animate
 - The block still occupies `1×1`; only the roughly `12/16`-block-high base collides, so the rings do not create an invisible wall.
 - Client world time drives the animation. The server syncs slot changes and success events instead of sending per-frame packets.
 
-Tier colors currently apply to the table's rings. Full-scene tier glow for inventory items, held items, drops, or worn armor is not released, and enhanced equipment does not become a dynamic light source. Helmet Illumination is a separate enhancement.
+Enhanced items now carry a separate silhouette halo: Tier I blue, Tier II purple, Tier III pink, and Tier IV orange. Halo width and intensity increase from level 1 to 10 inside each tier. Inventories, hotbars, and first-person hands have been verified in a real client; third-person hands, dropped items, and item frames share the same item-rendering path and remain under compatibility validation. The halo covers only the outside of the item silhouette and does not alter the original texture, item color, lighting, or vanilla enchantment glint. It does not illuminate the surrounding world. Worn armor does not yet receive this outline; Helmet Illumination remains a separate enhancement.
 
 ## HUD and Nail Gun Controls
 
@@ -209,7 +209,7 @@ Existing Minecraft 1.21.3 Fabric worlds and earlier Magic items can load in this
 
 ### Do enhanced items glow by tier or light the environment?
 
-Not yet. Only the table rings use the blue, purple, pink, and orange tier colors. Full-scene equipment glow is not released and equipment is not a dynamic light source; Helmet Illumination is separate.
+The strongest applicable enhancement selects a silhouette halo: Tier I blue, Tier II purple, Tier III pink, or Tier IV orange. Higher levels within a tier make the halo wider and stronger. Inventories, hotbars, and first-person hands have been verified in a real client; third-person hands, dropped items, and item frames remain under compatibility validation. The original item color and vanilla enchantment glint stay unchanged. Worn armor does not yet receive this outline, and the halo is not a dynamic light source; Helmet Illumination is separate.
 
 ### Where can I download the latest version or report a problem?
 
@@ -225,7 +225,7 @@ Download from [GitHub Releases](https://github.com/zoyluoblue/Minecraft_Magic/re
 ./gradlew runGameTest --no-daemon --stacktrace
 ```
 
-The release build compiles Java, processes resources, packages the JAR, verifies English/Chinese translation-key parity, and enforces the original Astral Table resource gate. The current Dedicated Server suite contains 34 GameTests covering material transactions, persistence, combat, ranged weapon snapshots, temporary effects, the Nail Gun state machine, and Strengthening Table visual-state contracts.
+The release build compiles Java, processes resources, packages the JAR, verifies English/Chinese translation-key parity, and enforces the original Astral Table and outline-shader resource gates. The current Dedicated Server suite contains 35 GameTests covering material transactions, persistence, combat, ranged weapon snapshots, temporary effects, the Nail Gun state machine, and Strengthening Table/outline visual rules.
 
 </details>
 

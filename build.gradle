@@ -75,17 +75,25 @@ def strengtheningTableVisualFiles = [
 		file("src/main/resources/assets/magic/textures/entity/strengthening_table_energy.png")
 ]
 
+def enhancementOutlineShaderFiles = [
+		file("src/main/resources/assets/magic/shaders/core/rendertype_enhancement_outline.json"),
+		file("src/main/resources/assets/magic/shaders/core/rendertype_enhancement_outline.vsh"),
+		file("src/main/resources/assets/magic/shaders/core/rendertype_enhancement_outline.fsh")
+]
+
+def magicVisualFiles = strengtheningTableVisualFiles + enhancementOutlineShaderFiles
+
 def verifyMagicVisualResources = tasks.register("verifyMagicVisualResources") {
 	group = "verification"
-	description = "Validates Magic's original Strengthening Table models, textures, and release-JAR isolation."
+	description = "Validates Magic's original visual resources, enhancement outline shader, and release-JAR isolation."
 	dependsOn tasks.named("remapJar")
-	inputs.files(strengtheningTableVisualFiles)
+	inputs.files(magicVisualFiles)
 	inputs.files(fileTree("src/gametest/java") { include "**/*.java" })
 
 	doLast {
-		def missingFiles = strengtheningTableVisualFiles.findAll { !it.isFile() }
+		def missingFiles = magicVisualFiles.findAll { !it.isFile() }
 		if (!missingFiles.isEmpty()) {
-			throw new GradleException("Missing Strengthening Table visual resources: ${missingFiles*.path}")
+			throw new GradleException("Missing Magic visual resources: ${missingFiles*.path}")
 		}
 
 		def json = new groovy.json.JsonSlurper()
@@ -141,6 +149,17 @@ def verifyMagicVisualResources = tasks.register("verifyMagicVisualResources") {
 			throw new GradleException("${itemModelFile}: item model must use the static Magic block model")
 		}
 
+		def outlineShaderConfigFile = enhancementOutlineShaderFiles[0]
+		def outlineShaderConfig = json.parse(outlineShaderConfigFile) as Map
+		if (outlineShaderConfig.vertex != "magic:core/rendertype_enhancement_outline"
+				|| outlineShaderConfig.fragment != "magic:core/rendertype_enhancement_outline") {
+			throw new GradleException("${outlineShaderConfigFile}: outline shader stages must use the magic namespace")
+		}
+		if (!(outlineShaderConfig.samplers instanceof List)
+				|| !outlineShaderConfig.samplers.any { it instanceof Map && it.name == "Sampler0" }) {
+			throw new GradleException("${outlineShaderConfigFile}: outline shader must declare Sampler0")
+		}
+
 		strengtheningTableVisualFiles.findAll { it.name.endsWith(".png") }.each { textureFile ->
 			def image = javax.imageio.ImageIO.read(textureFile)
 			if (image == null || image.width <= 0 || image.height <= 0) {
@@ -154,7 +173,7 @@ def verifyMagicVisualResources = tasks.register("verifyMagicVisualResources") {
 		}
 		new java.util.zip.ZipFile(releaseJar).withCloseable { zip ->
 			def entries = java.util.Collections.list(zip.entries())*.name
-			def requiredJarEntries = strengtheningTableVisualFiles.collect { resourceFile ->
+			def requiredJarEntries = magicVisualFiles.collect { resourceFile ->
 				def normalized = projectDir.toPath().relativize(resourceFile.toPath()).toString().replace('\\', '/')
 				return normalized.substring("src/main/resources/".length())
 			}
