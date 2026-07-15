@@ -7,8 +7,11 @@ English | [简体中文](readme.md)
 [![Minecraft](https://img.shields.io/badge/Minecraft-1.21.3-62B47A)](https://www.minecraft.net/)
 [![Fabric](https://img.shields.io/badge/Fabric_Loader-0.18.4%2B-DBD0B4)](https://fabricmc.net/)
 [![License](https://img.shields.io/github/license/zoyluoblue/Minecraft_Magic)](LICENSE)
+[![Modrinth](https://img.shields.io/badge/Modrinth-zoyluo--magic-1BD96A?logo=modrinth&logoColor=white)](https://modrinth.com/mod/zoyluo-magic)
 
-[Download the latest release](https://github.com/zoyluoblue/Minecraft_Magic/releases/latest) · [Three-minute quick start](#three-minute-quick-start) · [Explore all 12 enhancements](#12-stackable-enhancements) · [FAQ](#frequently-asked-questions)
+[Download on Modrinth](https://modrinth.com/mod/zoyluo-magic) · [GitHub Releases](https://github.com/zoyluoblue/Minecraft_Magic/releases/latest) · [Three-minute quick start](#three-minute-quick-start) · [Explore all 12 enhancements](#12-stackable-enhancements) · [FAQ](#frequently-asked-questions)
+
+**About the Modrinth link:** [zoyluo-magic](https://modrinth.com/mod/zoyluo-magic) is the recommended release page for Minecraft and Fabric compatibility tags, version changelogs, the promotional gallery, and the production JAR. [GitHub Releases](https://github.com/zoyluoblue/Minecraft_Magic/releases/latest) provides the matching release artifacts alongside the source repository.
 
 ![Minecraft Magic equipment enhancement mod poster showing 12 stackable enhancements, four tiers, 40 levels, and server-authoritative multiplayer](./demo/readme/2.1.0/01-minecraft-magic-equipment-enhancement.png)
 
@@ -46,7 +49,7 @@ English | [简体中文](readme.md)
 Installation:
 
 1. Install Fabric Loader and Fabric API for Minecraft 1.21.3.
-2. Download the non-`sources` Magic JAR from [GitHub Releases](https://github.com/zoyluoblue/Minecraft_Magic/releases/latest).
+2. Download the non-`sources` Magic JAR from [Modrinth](https://modrinth.com/mod/zoyluo-magic) or [GitHub Releases](https://github.com/zoyluoblue/Minecraft_Magic/releases/latest).
 3. Put both the Magic JAR and Fabric API in the game's or server's `mods` directory.
 4. Multiplayer requires Magic and Fabric API on both client and server, with matching Magic versions.
 

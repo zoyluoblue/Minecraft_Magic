@@ -7,8 +7,11 @@
 [![Minecraft](https://img.shields.io/badge/Minecraft-1.21.3-62B47A)](https://www.minecraft.net/)
 [![Fabric](https://img.shields.io/badge/Fabric_Loader-0.18.4%2B-DBD0B4)](https://fabricmc.net/)
 [![License](https://img.shields.io/github/license/zoyluoblue/Minecraft_Magic)](LICENSE)
+[![Modrinth](https://img.shields.io/badge/Modrinth-zoyluo--magic-1BD96A?logo=modrinth&logoColor=white)](https://modrinth.com/mod/zoyluo-magic)
 
-[下载最新版本](https://github.com/zoyluoblue/Minecraft_Magic/releases/latest) · [三分钟快速开始](#三分钟快速开始) · [查看 12 种强化](#12-种可叠加强化) · [常见问题](#常见问题-faq)
+[在 Modrinth 下载](https://modrinth.com/mod/zoyluo-magic) · [GitHub Releases](https://github.com/zoyluoblue/Minecraft_Magic/releases/latest) · [三分钟快速开始](#三分钟快速开始) · [查看 12 种强化](#12-种可叠加强化) · [常见问题](#常见问题-faq)
+
+**Modrinth 下载说明：** [zoyluo-magic](https://modrinth.com/mod/zoyluo-magic) 是推荐的发布页，可查看 Minecraft 与 Fabric 兼容标签、版本更新说明、宣传图库并下载正式 JAR；[GitHub Releases](https://github.com/zoyluoblue/Minecraft_Magic/releases/latest) 同步提供发布构件与源码仓库关联。
 
 ![Minecraft Magic 装备强化 Mod 宣传图：12 种可叠加强化、四阶 40 级成长与多人服务端权威](./demo/readme/2.1.0/01-minecraft-magic-equipment-enhancement.png)
 
@@ -46,7 +49,7 @@
 安装步骤：
 
 1. 安装 Minecraft 1.21.3 对应的 Fabric Loader 与 Fabric API。
-2. 从 [GitHub Releases](https://github.com/zoyluoblue/Minecraft_Magic/releases/latest) 下载非 `sources` 的 Magic JAR。
+2. 从 [Modrinth](https://modrinth.com/mod/zoyluo-magic) 或 [GitHub Releases](https://github.com/zoyluoblue/Minecraft_Magic/releases/latest) 下载非 `sources` 的 Magic JAR。
 3. 把 Magic JAR 和 Fabric API 放入游戏或服务器的 `mods` 文件夹。
 4. 多人服务器需要客户端与服务端都安装 Magic 和 Fabric API，并保持 Magic 版本一致。
 
