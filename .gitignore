@@ -11,3 +11,9 @@ logs/
 /docs/
 /FEATURE_DESIGN.md
 /assets/
+/tools/
+/scripts/
+/AGENTS.md
+/RELEASING.md
+/.agents/
+/.codex/
