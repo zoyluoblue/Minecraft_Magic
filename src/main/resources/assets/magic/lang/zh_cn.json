@@ -3,7 +3,7 @@
 	"item.magic.strengthening_table": "强化台",
 	"container.magic.strengthening_table": "强化台",
 	"category.magic": "魔法",
-	"key.magic.toggle_hud": "选择强化数值显示",
+	"key.magic.open_hud_selection": "选择强化数值显示（需按左 Option/Alt）",
 	"enhancement.magic.crit": "暴击",
 	"enhancement.magic.petrify": "石化",
 	"enhancement.magic.instant_kill": "一击",

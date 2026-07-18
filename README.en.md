@@ -33,7 +33,7 @@ English | [简体中文](readme.md)
 - **12 stackable enhancements:** combat, mobility, exploration, fluid walking, and cable traversal each have a distinct role.
 - **Original Astral Strengthening Table:** three rings orbit the inserted item and shift through blue, purple, pink, and orange progression colors.
 - **Multiplayer-first rules:** critical outcomes resolve on the server, projectiles keep launch-time weapon snapshots, and tracking players see authoritative cable and table events.
-- **Player-selected HUD:** press `F9` and choose exactly which equipment values and ore targets to display.
+- **Player-selected HUD:** press `Left Option + B` on macOS or `Left Alt + B` on Windows and choose exactly which equipment values and ore targets to display.
 - **Separate from vanilla enchanting:** Magic adds an independent enhancement layer without replacing the vanilla Enchanting Table or enchantments.
 
 ## Compatibility and Installation
@@ -83,7 +83,7 @@ It is also available in the Functional Blocks creative category or through:
 3. Select the enhancement you want to improve.
 4. Put the current tier material in the right slot. Requirements above 64 combine the material slot with matching items in your inventory.
 5. Select enhance when enough material is available. Upgrades always succeed and never randomly fail or damage the item.
-6. Read the result in the item tooltip, or press `F9` to choose what appears in the HUD.
+6. Read the result in the item tooltip, or press `Left Option + B` on macOS / `Left Alt + B` on Windows to choose what appears in the HUD.
 
 ## Four Tiers, 40 Levels
 
@@ -125,14 +125,14 @@ These effects support melee attacks, bows, physical crossbow arrows, and thrown 
 | Slot | Enhancement | IV-10 effect | Key limit |
 | --- | --- | --- | --- |
 | Helmet | Illumination | Display value 10; moving vanilla light level maps to 12–15 | The display value is not a 10-block light radius |
-| Helmet | Ore Seeker | Up to 100 blocks on each XYZ axis | Scans loaded client chunks only |
+| Helmet | Ore Seeker | Up to 100 blocks on each XYZ axis | Scans loaded client chunks only; arrow and distance appear in the upper-right corner |
 | Chestplate | Nail Gun | Up to 80 blocks | Requires matching client and server versions |
 | Leggings | Speed | +400% base movement speed with aerial acceleration | High speed still obeys collision and terrain |
 | Leggings | Jump Height | +400% base Jump Strength and 80% less fall damage | Real block height does not increase linearly by 400% |
-| Boots | Water Soul | Up to 40 seconds of water-walking charge | Drains on water; recovers at one second per second away from water |
+| Boots | Water Soul | Up to 40 seconds of water-walking charge | Drains while the player touches water; recovers at one second per second only after fully leaving water |
 | Boots | Fire Soul | Up to 40 seconds of lava walking and burn protection | Protection ends when charge is depleted |
 
-Water Soul and Fire Soul charge belongs to the boots and survives copying, trading, drops, reconnects, and server restarts.
+Water Soul and Fire Soul charge belongs to the boots and survives copying, trading, drops, reconnects, and server restarts. While Water Soul boots are walking on the surface, hold the current sneak key (`Shift` by default) to dive; vanilla swimming and ascent resume once submerged. Charge does not recover while the player's body still touches water, even when standing on a solid underwater block.
 
 ## Astral Strengthening Table
 
@@ -150,12 +150,13 @@ Enhanced items now carry a separate silhouette halo: Tier I blue, Tier II purple
 
 | Action | Default input | Behavior |
 | --- | --- | --- |
-| Open HUD selection | `F9` | A Minecraft KeyBinding that can be rebound |
+| Open HUD selection | macOS: `Left Option + B`; Windows: `Left Alt + B` | `B` can be rebound in Minecraft Controls; the left modifier is fixed |
+| Dive from the water surface | Current sneak key, `Shift` by default | Hold while surface-walking with Water Soul boots |
 | Fire/release Nail Gun | `Alt + 1` | Read only with no screen open and a Nail Gun chestplate equipped |
-| Start pulling | Current jump key, `Space` by default | Press once after attaching to begin continuous pull |
+| Start pulling | Current jump key, `Space` by default | Press once after attaching to pull straight toward the anchor along the cable |
 | Release Nail Gun | Press `Alt + 1` again or `Esc` | Arrival, obstruction, timeout, death, or dimension change also releases it |
 
-The `F9` screen groups main hand, off hand, helmet, chestplate, leggings, and boots. After the player selects entries, the lower-left HUD shows equipment slot, item name, enhancement, level, and value; Ore Seeker guidance appears at the top of the screen. HUD and ore-target choices last for the current client session only and must be selected again after restart.
+The HUD selection screen groups main hand, off hand, helmet, chestplate, leggings, and boots. After the player selects entries, the lower-left HUD shows equipment slot, item name, enhancement, level, and value; the Ore Seeker arrow and distance appear in the upper-right corner. HUD and ore-target choices last for the current client session only and must be selected again after restart.
 
 ## Multiplayer and Reliability
 
@@ -225,7 +226,7 @@ Download from [GitHub Releases](https://github.com/zoyluoblue/Minecraft_Magic/re
 ./gradlew runGameTest --no-daemon --stacktrace
 ```
 
-The release build compiles Java, processes resources, packages the JAR, verifies English/Chinese translation-key parity, and enforces the original Astral Table and outline-shader resource gates. The current Dedicated Server suite contains 35 GameTests covering material transactions, persistence, combat, ranged weapon snapshots, temporary effects, the Nail Gun state machine, and Strengthening Table/outline visual rules.
+The release build compiles Java, processes resources, packages the JAR, verifies English/Chinese translation-key parity, and enforces the original Astral Table and outline-shader resource gates. The current Dedicated Server suite contains 37 GameTests covering material transactions, persistence, Water Soul underwater movement, combat, ranged weapon snapshots, temporary effects, the Nail Gun state machine and straight pull, and Strengthening Table/outline visual rules.
 
 </details>
 

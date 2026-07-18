@@ -3,7 +3,7 @@
 	"item.magic.strengthening_table": "Strengthening Table",
 	"container.magic.strengthening_table": "Strengthening Table",
 	"category.magic": "Magic",
-	"key.magic.toggle_hud": "Select Enhancement Values",
+	"key.magic.open_hud_selection": "Select Enhancement Values (hold Left Option/Alt)",
 	"enhancement.magic.crit": "Critical Hit",
 	"enhancement.magic.petrify": "Petrify",
 	"enhancement.magic.instant_kill": "Instant Kill",

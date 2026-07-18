@@ -10,16 +10,19 @@ import net.minecraft.block.Blocks;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.NbtComponent;
 import net.minecraft.entity.EquipmentSlot;
+import net.minecraft.fluid.FluidState;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.DisconnectionInfo;
 import net.minecraft.network.RegistryByteBuf;
+import net.minecraft.registry.tag.FluidTags;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.test.GameTest;
 import net.minecraft.test.TestContext;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.GameMode;
 
 import java.util.UUID;
@@ -49,6 +52,58 @@ public final class Phase1DataAndNailGameTests implements FabricGameTest {
 
 		require(context, snapshot.fireRemainingMillis() == 3_500L, "offline recovery was not one-to-one with elapsed milliseconds");
 		context.complete();
+	}
+
+	@GameTest(templateName = FabricGameTest.EMPTY_STRUCTURE, tickLimit = 20)
+	public void waterSoulKeepsDrainingOnTheSeabedAndAllowsSneakDive(TestContext context) {
+		SoulChargeService.clearForTest();
+		ServerPlayerEntity player = context.createMockCreativeServerPlayerInWorld();
+		try {
+			ItemStack boots = soulBoots(EnhancementType.WATER_SOUL, new EnhancementSystem.Level(1, 10));
+			EnhancementSystem.setLevel(boots, EnhancementType.FIRE_SOUL, new EnhancementSystem.Level(1, 10));
+			player.equipStack(EquipmentSlot.FEET, boots);
+			require(context, SoulChargeService.getRemainingMillis(player, EnhancementType.WATER_SOUL) == 10 * SECOND, "water soul did not initialize at full charge");
+
+			FluidState water = Blocks.WATER.getDefaultState().getFluidState();
+			FluidState lava = Blocks.LAVA.getDefaultState().getFluidState();
+			player.setSneaking(false);
+			require(context, BootEnhancementEffects.canWalkOnFluid(player, water), "charged water soul did not support surface walking");
+			player.setSneaking(true);
+			require(context, !BootEnhancementEffects.canWalkOnFluid(player, water), "sneaking did not disable water-surface walking");
+			require(context, BootEnhancementEffects.canWalkOnFluid(player, lava), "sneaking unexpectedly disabled fire-soul lava walking");
+
+			BlockPos floorRelative = new BlockPos(1, 1, 1);
+			context.setBlockState(floorRelative, Blocks.STONE);
+			context.setBlockState(floorRelative.up(), Blocks.WATER);
+			context.setBlockState(floorRelative.up(2), Blocks.WATER);
+			context.setBlockState(floorRelative.up(3), Blocks.WATER);
+			BlockPos floor = context.getAbsolutePos(floorRelative);
+			require(context, context.getWorld().getFluidState(floor.up()).isIn(FluidTags.WATER), "seabed fixture water block was not created");
+			player.setPosition(floor.getX() + 0.5D, floor.getY() + 1.0D, floor.getZ() + 0.5D);
+			player.setVelocity(0.0D, 0.0D, 0.0D);
+			player.setSneaking(false);
+			// The vanilla submergedInWater boolean consumes the eye-fluid tags gathered by the
+			// previous base tick, so two deterministic refreshes are required for this fixture.
+			player.baseTick();
+			require(context, player.isSubmergedIn(FluidTags.WATER), "seabed fixture did not put the player's eyes in water");
+			player.baseTick();
+
+			require(context, player.isTouchingWater(), "seabed fixture did not put the player in water");
+			require(context, player.isSubmergedInWater(), "seabed fixture did not submerge the player");
+			require(context, BootEnhancementEffects.isNearWater(player), "standing on a submerged solid block was misclassified as leaving water");
+
+			require(context, SoulChargeService.setRemainingForTest(player, EnhancementType.WATER_SOUL, 0L), "could not stage depleted water soul");
+			require(context, SoulChargeService.advanceForTest(player, SECOND), "could not advance water soul runtime");
+			require(context, SoulChargeService.getRemainingMillis(player, EnhancementType.WATER_SOUL) == 0L, "depleted water soul recovered while the player was still underwater");
+
+			require(context, SoulChargeService.setRemainingForTest(player, EnhancementType.WATER_SOUL, 5 * SECOND), "could not stage charged submerged water soul");
+			player.setSneaking(false);
+			require(context, !BootEnhancementEffects.canWalkOnFluid(player, water), "submerged water soul re-enabled surface collision and could trap the player underwater");
+			context.complete();
+		} finally {
+			SoulChargeService.clearForTest();
+			player.networkHandler.disconnect(new DisconnectionInfo(Text.literal("GameTest complete")));
+		}
 	}
 
 	@GameTest(templateName = FabricGameTest.EMPTY_STRUCTURE, tickLimit = 20)
@@ -242,6 +297,44 @@ public final class Phase1DataAndNailGameTests implements FabricGameTest {
 
 			NailGunEffects.handleCommand(player, NailGunCommandPayload.current(1L, NailGunCommandPayload.Command.PULL));
 			require(context, NailGunEffects.acknowledgedSequenceForTest(player) == 1L, "valid command stayed blocked after wrong-version rejection");
+			context.complete();
+		} finally {
+			NailGunEffects.clearForTest();
+			player.networkHandler.disconnect(new DisconnectionInfo(Text.literal("GameTest complete")));
+		}
+	}
+
+	@GameTest(templateName = FabricGameTest.EMPTY_STRUCTURE, tickLimit = 40)
+	public void nailGunPullVelocityFollowsTheAnchorInAStraightLine(TestContext context) {
+		NailGunEffects.clearForTest();
+		ServerPlayerEntity player = context.createMockCreativeServerPlayerInWorld();
+		try {
+			player.changeGameMode(GameMode.SURVIVAL);
+			BlockPos playerPos = context.getAbsolutePos(new BlockPos(1, 1, 1));
+			player.setPosition(playerPos.getX() + 0.5D, playerPos.getY(), playerPos.getZ() + 0.5D);
+			player.setYaw(0.0F);
+			player.setPitch(0.0F);
+			ItemStack chestplate = new ItemStack(Items.DIAMOND_CHESTPLATE);
+			EnhancementSystem.setLevel(chestplate, EnhancementType.NAIL_GUN, new EnhancementSystem.Level(4, 10));
+			player.equipStack(EquipmentSlot.CHEST, chestplate);
+			context.setBlockState(new BlockPos(1, 2, 6), Blocks.STONE);
+
+			NailGunEffects.handleCommand(player, NailGunCommandPayload.current(1L, NailGunCommandPayload.Command.FIRE));
+			NailGunEffects.handleCommand(player, NailGunCommandPayload.current(2L, NailGunCommandPayload.Command.PULL));
+			Vec3d toAnchor = NailGunEffects.anchorForTest(player.getUuid()).subtract(
+					player.getPos().add(0.0D, player.getStandingEyeHeight() * 0.35D, 0.0D)
+			);
+			player.setVelocity(0.9D, -0.4D, -0.3D);
+			NailGunEffects.tickPlayer(player);
+
+			Vec3d pullVelocity = player.getVelocity();
+			require(context, NailGunEffects.phaseForTest(player.getUuid()) == NailGunRuntimePayload.Phase.PULLING, "straight pull unexpectedly released the hook");
+			require(context, pullVelocity.lengthSquared() > 1.0E-5D, "straight pull produced no movement");
+			require(
+					context,
+					pullVelocity.normalize().dotProduct(toAnchor.normalize()) > 0.999999D,
+					"straight pull retained lateral momentum instead of following the anchor"
+			);
 			context.complete();
 		} finally {
 			NailGunEffects.clearForTest();

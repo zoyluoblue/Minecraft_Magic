@@ -31,12 +31,18 @@ public final class BootEnhancementEffects {
 			return false;
 		}
 		if (fluidState.isIn(FluidTags.WATER)) {
-			return SoulChargeService.hasCharge(player, EnhancementType.WATER_SOUL);
+			return canUseWaterSoulWalk(player);
 		}
 		if (fluidState.isIn(FluidTags.LAVA)) {
 			return SoulChargeService.hasCharge(player, EnhancementType.FIRE_SOUL);
 		}
 		return false;
+	}
+
+	public static boolean canUseWaterSoulWalk(PlayerEntity player) {
+		return !player.isSneaking()
+				&& !player.isSubmergedInWater()
+				&& SoulChargeService.hasCharge(player, EnhancementType.WATER_SOUL);
 	}
 
 	public static boolean canUseFireSoulWalk(PlayerEntity player) {
@@ -58,7 +64,9 @@ public final class BootEnhancementEffects {
 	}
 
 	static boolean isNearWater(PlayerEntity player) {
-		return isNearFluid(player, FluidTags.WATER);
+		// The feet block can be solid while the rest of the player is underwater, for example when
+		// standing on the seabed. Keep draining in that state instead of starting recovery.
+		return player.isTouchingWater() || isNearFluid(player, FluidTags.WATER);
 	}
 
 	static boolean isNearLava(PlayerEntity player) {

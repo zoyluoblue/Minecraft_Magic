@@ -40,6 +40,8 @@ public final class HelmetOreLocator {
 	private static final int SCAN_INTERVAL_TICKS = 20;
 	private static final float OVERLAY_SCALE = 0.34F;
 	private static final int OVERLAY_TOP = 7;
+	private static final int OVERLAY_RIGHT_MARGIN = 7;
+	private static final int ARROW_BOUNDING_RADIUS = 21;
 	private static final Set<OreTarget> selectedTargets = new LinkedHashSet<>();
 	@Nullable
 	private static LocatedOre locatedOre;
@@ -115,7 +117,6 @@ public final class HelmetOreLocator {
 		}
 
 		double distance = Math.sqrt(player.getPos().squaredDistanceTo(locatedOre.pos().toCenterPos()));
-		int centerX = context.getScaledWindowWidth() / 2;
 		TextRenderer textRenderer = client.textRenderer;
 		Text label = Text.translatable(
 				"hud.magic.ore_locator",
@@ -124,9 +125,12 @@ public final class HelmetOreLocator {
 				verticalText(player, locatedOre.pos())
 		);
 		int textWidth = textRenderer.getWidth(label);
+		int contentHalfWidth = Math.max((textWidth + 1) / 2, ARROW_BOUNDING_RADIUS);
+		int scaledHalfWidth = MathHelper.ceil(contentHalfWidth * OVERLAY_SCALE);
+		int anchorX = context.getScaledWindowWidth() - OVERLAY_RIGHT_MARGIN - scaledHalfWidth;
 		MatrixStack matrices = context.getMatrices();
 		matrices.push();
-		matrices.translate(centerX, OVERLAY_TOP, 0.0D);
+		matrices.translate(anchorX, OVERLAY_TOP, 0.0D);
 		matrices.scale(OVERLAY_SCALE, OVERLAY_SCALE, 1.0F);
 		drawArrow(context, 0, 10, getRelativeAngle(player, locatedOre.pos()));
 		context.drawText(textRenderer, label, -textWidth / 2, 23, 0xCCFDE68A, false);

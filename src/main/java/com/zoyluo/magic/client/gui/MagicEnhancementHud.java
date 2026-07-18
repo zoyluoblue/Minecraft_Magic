@@ -35,19 +35,24 @@ public final class MagicEnhancementHud {
 
 	public static void register() {
 		toggleKeyBinding = KeyBindingHelper.registerKeyBinding(new KeyBinding(
-				"key.magic.toggle_hud",
+				"key.magic.open_hud_selection",
 				InputUtil.Type.KEYSYM,
-				GLFW.GLFW_KEY_F9,
+				GLFW.GLFW_KEY_B,
 				"category.magic"
 		));
 		ClientTickEvents.END_CLIENT_TICK.register(client -> {
 			while (toggleKeyBinding.wasPressed()) {
-				if (client.player != null) {
+				if (client.player != null && isLeftOptionOrAltDown(client)) {
 					client.setScreen(new MagicEnhancementSelectionScreen(client.currentScreen));
 				}
 			}
 		});
 		HudRenderCallback.EVENT.register(MagicEnhancementHud::render);
+	}
+
+	private static boolean isLeftOptionOrAltDown(MinecraftClient client) {
+		// GLFW exposes macOS Left Option and Windows/Linux Left Alt through the same key.
+		return InputUtil.isKeyPressed(client.getWindow().getHandle(), GLFW.GLFW_KEY_LEFT_ALT);
 	}
 
 	private static void render(DrawContext context, RenderTickCounter tickCounter) {

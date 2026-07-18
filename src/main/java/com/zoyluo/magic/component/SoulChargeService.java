@@ -474,6 +474,16 @@ public final class SoulChargeService {
 		return true;
 	}
 
+	static boolean advanceForTest(ServerPlayerEntity player, long elapsedMillis) {
+		RuntimeState state = ACTIVE.get(player.getUuid());
+		if (state == null || elapsedMillis <= 0L) {
+			return false;
+		}
+		long elapsedNanos = elapsedMillis * NANOS_PER_MILLI;
+		tickPlayer(player, state.lastUpdateNanos + elapsedNanos, System.currentTimeMillis() + elapsedMillis);
+		return true;
+	}
+
 	static void clearForTest() {
 		ACTIVE.clear();
 		SEQUENCES.clear();

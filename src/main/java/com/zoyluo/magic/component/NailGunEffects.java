@@ -44,7 +44,6 @@ import java.util.UUID;
 public final class NailGunEffects {
 	private static final double BLOCK_FACE_OFFSET = 0.12D;
 	private static final double ARRIVAL_DISTANCE = 1.0D;
-	private static final double PULL_ACCELERATION = 0.12D;
 	private static final double MIN_PULL_SPEED = 0.45D;
 	private static final double MAX_PULL_SPEED = 1.35D;
 	private static final double STALL_PROGRESS_EPSILON = 0.025D;
@@ -263,11 +262,11 @@ public final class NailGunEffects {
 			return;
 		}
 
-		Vec3d velocity = player.getVelocity().multiply(0.90D).add(toAnchor.normalize().multiply(PULL_ACCELERATION));
 		double speedCap = Math.min(MAX_PULL_SPEED, Math.max(MIN_PULL_SPEED, player.getMovementSpeed() * 4.3D));
-		if (velocity.lengthSquared() > speedCap * speedCap) {
-			velocity = velocity.normalize().multiply(speedCap);
-		}
+		// Discard previous momentum so every pull tick follows the cable directly instead of
+		// curving toward it. Clamp the final step to the arrival boundary to avoid overshooting.
+		double pullSpeed = Math.min(speedCap, distance - ARRIVAL_DISTANCE);
+		Vec3d velocity = toAnchor.normalize().multiply(pullSpeed);
 		Vec3d collisionSafeVelocity = Entity.adjustMovementForCollisions(
 				player,
 				velocity,
@@ -441,6 +440,10 @@ public final class NailGunEffects {
 
 	static long acknowledgedSequenceForTest(ServerPlayerEntity player) {
 		return acknowledgedSequence(player);
+	}
+
+	static Vec3d anchorForTest(UUID playerUuid) {
+		return currentAnchor(playerUuid);
 	}
 
 	static void clearForTest() {
