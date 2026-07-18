@@ -148,6 +148,15 @@ Enhanced items now carry a separate silhouette halo: Tier I blue, Tier II purple
 
 ## HUD and Nail Gun Controls
 
+### Using the HUD selection shortcut
+
+1. On macOS, hold the left `Option (⌥)` key. On Windows, hold the left `Alt` key.
+2. Keep the left modifier held and press the HUD key (`B` by default) to open the selection screen. The left `Option/Alt` key is required; pressing `B` alone, using the right modifier, or pressing the legacy `F9` key will not open it.
+3. Enable the equipment slots, enhancement values, and Ore Seeker targets you want, then select **Confirm**. Equipment details appear in the lower-left corner, while the Ore Seeker arrow and distance appear in the upper-right corner.
+4. To replace `B`, open Minecraft **Options → Controls**, find **Select Enhancement Values (hold Left Option/Alt)**, and rebind its primary key. The left `Option/Alt` modifier is fixed and cannot be rebound.
+
+> When upgrading from `2.2.0` or earlier, players who customized the legacy `F9` binding must configure the new Controls entry once.
+
 | Action | Default input | Behavior |
 | --- | --- | --- |
 | Open HUD selection | macOS: `Left Option + B`; Windows: `Left Alt + B` | `B` can be rebound in Minecraft Controls; the left modifier is fixed |
